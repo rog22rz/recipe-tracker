@@ -1,0 +1,39 @@
+<h1>Edit Recipe</h1>
+
+<%= form_with model: @recipe, local: true do |form| %>
+  <% if @recipe.errors.any? %>
+    <div>
+      <h2><%= pluralize(@recipe.errors.count, "error") %> prevented this recipe from being saved:</h2>
+      <ul>
+        <% @recipe.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :title %><br>
+    <%= form.text_field :title %>
+  </div>
+
+  <div>
+    <%= form.label :ingredients %><br>
+    <%= form.text_area :ingredients, rows: 8 %>
+  </div>
+
+  <div>
+    <%= form.label :instructions %><br>
+    <%= form.text_area :instructions, rows: 10 %>
+  </div>
+
+  <div>
+    <%= form.submit "Update Recipe" %>
+  </div>
+<% end %>
+
+<p>
+  <%= link_to "Cancel Edit", @recipe %> |
+  <%= link_to "Back to Recipes", recipes_path %>
+</p>
+
