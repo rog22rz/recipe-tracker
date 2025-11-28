@@ -1,14 +1,30 @@
-<h1>Recipes</h1>
+<h2 class="page-title">Recipes</h2>
 
-<ul>
-  <% @recipes.each do |recipe| %>
-    <li>
-      <%= link_to recipe.title, recipe_path(recipe) %>
-    </li>
-  <% end %>
-</ul>
+<% if @recipes.any? %>
+  <ul class="recipe-list">
+    <% @recipes.each do |recipe| %>
+      <li class="card">
+        <h3 class="card-title">
+          <%= link_to recipe.title, recipe_path(recipe), class: "card-title-link" %>
+        </h3>
 
-<p>
-  <%= link_to "New Recipe", new_recipe_path %>
-</p>
+        <div class="card-actions">
+          <%= link_to "View", recipe_path(recipe), class: "btn btn-secondary btn-small" %>
+          <%= link_to "Edit", edit_recipe_path(recipe), class: "btn btn-secondary btn-small" %>
+          <%= button_to "Delete",
+                        recipe,
+                        method: :delete,
+                        data: { confirm: "Delete this recipe?" },
+                        class: "btn btn-danger btn-small" %>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+  <div class="card-actions" style="margin-bottom: 0.75rem;">
+    <%= link_to "➕ New Recipe", new_recipe_path, class: "btn btn-primary" %>
+  </div>
+<% else %>
+  <p>No recipes yet. Why not add your first one? 🧑‍🍳</p>
+  <%= link_to "Create a Recipe", new_recipe_path, class: "btn btn-primary" %>
+<% end %>
 

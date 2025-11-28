@@ -1,29 +1,42 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Ken Favourite Recipes" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Ken Favourite Recipes">
-    <meta name="mobile-web-app-capable" content="yes">
+    <title>Ken's Favorite Recipes</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="app-body">
+    <header class="app-header">
+      <div class="container header-inner">
+        <h1 class="logo">
+          <%= link_to "🍲 Recipe Book", root_path %>
+        </h1>
+        <nav class="nav-links">
+          <%= link_to "All Recipes", recipes_path, class: "nav-link" %>
+          <%= link_to "New Recipe", new_recipe_path, class: "nav-link" %>
+        </nav>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <div class="container">
+        <% if notice %>
+          <p class="flash flash-notice"><%= notice %></p>
+        <% end %>
+
+        <%= yield %>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <div class="container">
+        <p>&copy; <%= Time.current.year %> My Recipe Book</p>
+      </div>
+    </footer>
   </body>
 </html>
+
