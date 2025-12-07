@@ -1,9 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  recipe: one
-  tag: one
+japchae_dinner:
+  recipe: japchae
+  tag: dinner
 
-two:
-  recipe: two
-  tag: two
+japchae_korean:
+  recipe: japchae
+  tag: korean
+
+pancakes_breakfast:
+  recipe: pancakes
+  tag: breakfast
+
+pancakes_easy:
+  recipe: pancakes
+  tag: easy

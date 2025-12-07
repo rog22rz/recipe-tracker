@@ -1,11 +1,32 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  title: MyString
-  ingredients: MyText
-  instructions: MyText
+japchae:
+  title: Japchae
+  ingredients: |
+    Garlic
+    Beef
+    Carrots
+    Japchae noodles
+    Sesame oil
+  instructions: |
+    Marinate the meat
+    Cook noodles
+    Stir fry vegetables
+    Mix everything together
 
-two:
-  title: MyString
-  ingredients: MyText
-  instructions: MyText
+pancakes:
+  title: Fluffy Pancakes
+  ingredients: |
+    2 cups flour
+    2 eggs
+    1 cup milk
+    1 tbsp sugar
+  instructions: |
+    Mix dry ingredients
+    Add wet ingredients
+    Cook on griddle
+
+no_ingredients:
+  title: Mystery Recipe
+  ingredients:
+  instructions: Just wing it
