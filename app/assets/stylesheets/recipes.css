@@ -166,3 +166,55 @@
   color: #718096;
 }
 
+/* ==========================================================================
+   Responsive - Recipe Pages
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .recipe-show-card {
+    padding: 1.25rem;
+    border-radius: 8px;
+  }
+
+  .recipe-section-title {
+    font-size: 1rem;
+  }
+
+  .cooking-log-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cooking-log-actions .btn {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .recipe-show-card {
+    padding: 1rem;
+  }
+
+  .recipe-ingredients-list,
+  .recipe-instructions-list {
+    font-size: 0.9rem;
+  }
+
+  .cooking-count {
+    font-size: 0.9rem;
+  }
+
+  .cooking-log-list li {
+    font-size: 0.85rem;
+  }
+
+  .tag-pill {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .tag-badge {
+    font-size: 0.7rem;
+  }
+}
+

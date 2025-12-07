@@ -37,3 +37,28 @@
   box-shadow: 0 0 0 1px rgba(49,130,206,0.3);
 }
 
+/* Make inputs full-width and properly sized on mobile */
+.form-input,
+.form-textarea {
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Prevent zoom on input focus in iOS */
+@media (max-width: 480px) {
+  .form-input,
+  .form-textarea {
+    font-size: 16px; /* Prevents iOS zoom */
+  }
+
+  .form-card {
+    padding: 1rem;
+  }
+
+  .form-label {
+    font-size: 0.85rem;
+  }
+}
+
