@@ -1,6 +1,14 @@
 <div class="recipe-show-card">
   <h2 class="page-title"><%= @recipe.title %></h2>
 
+  <% if @recipe.tags.any? %>
+    <div class="recipe-tags">
+      <% @recipe.tags.each do |tag| %>
+        <%= link_to tag.name, recipes_path(tag: tag.name), class: "tag-badge tag-badge-link" %>
+      <% end %>
+    </div>
+  <% end %>
+
   <% if @recipe.ingredients.present? %>
     <h3 class="recipe-section-title">Ingredients</h3>
     <ul class="recipe-ingredients-list">

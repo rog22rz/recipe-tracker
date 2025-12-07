@@ -97,3 +97,72 @@
   color: #e53e3e;
 }
 
+/* ==========================================================================
+   Tags
+   ========================================================================== */
+
+/* Tag filter bar on index page */
+.tag-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tag-pill {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #4a5568;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
+}
+
+.tag-pill:hover {
+  background: #cbd5e0;
+}
+
+.tag-pill-active {
+  background: #d272e0;
+  color: #ffffff;
+}
+
+.tag-pill-active:hover {
+  background: #c25dd4;
+}
+
+/* Tag badges on recipe cards and show page */
+.recipe-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.tag-badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: #edf2f7;
+  color: #4a5568;
+  font-size: 0.75rem;
+}
+
+.tag-badge-link {
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.tag-badge-link:hover {
+  background: #e2e8f0;
+}
+
+/* Form hint text */
+.form-hint {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: #718096;
+}
+

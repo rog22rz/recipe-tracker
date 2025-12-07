@@ -10,13 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_07_033920) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_07_135058) do
   create_table "cooking_logs", force: :cascade do |t|
     t.date "cooked_at"
     t.datetime "created_at", null: false
     t.integer "recipe_id", null: false
     t.datetime "updated_at", null: false
     t.index ["recipe_id"], name: "index_cooking_logs_on_recipe_id"
+  end
+
+  create_table "recipe_tags", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "recipe_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipe_id"], name: "index_recipe_tags_on_recipe_id"
+    t.index ["tag_id"], name: "index_recipe_tags_on_tag_id"
   end
 
   create_table "recipes", force: :cascade do |t|
@@ -27,5 +36,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_07_033920) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "tags", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_tags_on_name", unique: true
+  end
+
   add_foreign_key "cooking_logs", "recipes"
+  add_foreign_key "recipe_tags", "recipes"
+  add_foreign_key "recipe_tags", "tags"
 end
