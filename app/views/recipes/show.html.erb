@@ -28,5 +28,54 @@
                   @recipe,
                   method: :delete,
                   form: { data: { turbo_confirm: "Delete this recipe?" } },
-                  class: "btn btn-danger btn-small" %>  </div>
+                  class: "btn btn-danger btn-small" %>
+  </div>
+</div>
+
+<div class="recipe-show-card cooking-history-card">
+  <h3 class="recipe-section-title" style="margin-top: 0;">Cooking History</h3>
+  <p class="cooking-count">
+    Cooked <strong><%= @recipe.cooking_logs.count %></strong> time<%= @recipe.cooking_logs.count == 1 ? '' : 's' %>
+  </p>
+
+  <div class="cooking-log-actions" data-controller="modal">
+    <%= button_to "I cooked this today!", recipe_cooking_logs_path(@recipe), method: :post, class: "btn btn-primary btn-small" %>
+    <button type="button" class="btn btn-secondary btn-small" data-action="modal#open">Log a specific date</button>
+
+    <div class="modal-overlay" data-modal-target="overlay" data-action="click->modal#closeBackground" hidden>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Log a Cooking Date</h3>
+          <button type="button" class="modal-close" data-action="modal#close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <%= form_with url: recipe_cooking_logs_path(@recipe), method: :post, class: "modal-form" do |f| %>
+            <div class="form-group">
+              <%= label_tag :cooked_at, "When did you cook this?", class: "form-label" %>
+              <%= date_field_tag :cooked_at, Date.current, max: Date.current, class: "form-input" %>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn btn-secondary" data-action="modal#close">Cancel</button>
+              <%= submit_tag "Log this date", class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if @recipe.cooking_logs.any? %>
+    <ul class="cooking-log-list">
+      <% @recipe.cooking_logs.order(cooked_at: :desc).each do |log| %>
+        <li>
+          <%= log.cooked_at.strftime("%B %d, %Y") %>
+          <%= button_to "×",
+                        recipe_cooking_log_path(@recipe, log),
+                        method: :delete,
+                        class: "btn-remove-log",
+                        form: { data: { turbo_confirm: "Remove this cooking log?" } } %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
 </div>

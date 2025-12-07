@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_28_025422) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_07_033920) do
+  create_table "cooking_logs", force: :cascade do |t|
+    t.date "cooked_at"
+    t.datetime "created_at", null: false
+    t.integer "recipe_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipe_id"], name: "index_cooking_logs_on_recipe_id"
+  end
+
   create_table "recipes", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "ingredients"
@@ -18,4 +26,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_28_025422) do
     t.string "title"
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "cooking_logs", "recipes"
 end
