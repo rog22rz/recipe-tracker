@@ -34,7 +34,7 @@
 
     <div class="card-actions">
       <%= form.submit class: "btn btn-primary" %>
-      <%= link_to "Cancel", recipes_path, class: "btn btn-secondary" %>
+      <%= link_to "Cancel", @recipe.persisted? ? recipe_path(@recipe) : recipes_path, class: "btn btn-secondary" %>
     </div>
   <% end %>
 </div>
