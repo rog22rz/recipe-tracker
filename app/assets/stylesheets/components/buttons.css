@@ -1,0 +1,47 @@
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.btn {
+  display: inline-block;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-small {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.7rem;
+}
+
+.btn-primary {
+  background: #0e1c4d;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: #0c173f;
+}
+
+.btn-secondary {
+  background: #e2e8f0;
+  color: #2d3748;
+}
+
+.btn-secondary:hover {
+  background: #cbd5e0;
+}
+
+.btn-danger {
+  background: #e53e3e;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #c53030;
+}
+

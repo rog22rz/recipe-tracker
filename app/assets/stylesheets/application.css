@@ -1,14 +1,20 @@
 /*
- * This is a manifest file that'll be compiled into application.css.
+ * Main Application Styles
  *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
+ * This file contains base styles and layout. Component styles are organized
+ * in separate files:
  *
- * Consider organizing styles into separate files for maintainability.
+ *   components/buttons.css  - Button styles
+ *   components/cards.css    - Card and list styles
+ *   components/forms.css    - Form input styles
+ *   components/modal.css    - Modal dialog styles
+ *   recipes.css             - Recipe-specific page styles
  */
-/* Layout basics */
+
+/* ==========================================================================
+   Base & Typography
+   ========================================================================== */
+
 .app-body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   margin: 0;
@@ -22,7 +28,15 @@
   padding: 1.5rem;
 }
 
-/* Header / footer */
+.page-title {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+
 .app-header {
   background: #d272e0;
   color: #f7fafc;
@@ -55,9 +69,17 @@
   text-decoration: underline;
 }
 
+/* ==========================================================================
+   Main Content Area
+   ========================================================================== */
+
 .app-main {
   min-height: calc(100vh - 120px);
 }
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
 
 .app-footer {
   background: #edf2f7;
@@ -68,7 +90,10 @@
   color: #4a5568;
 }
 
-/* Flash message */
+/* ==========================================================================
+   Flash Messages
+   ========================================================================== */
+
 .flash {
   padding: 0.75rem 1rem;
   border-radius: 6px;
@@ -81,308 +106,7 @@
   color: #22543d;
 }
 
-/* Typography */
-.page-title {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
+.flash-alert {
+  background: #fed7d7;
+  color: #742a2a;
 }
-
-/* Cards / lists */
-.recipe-list {
-  list-style: none;
-  padding: 0;
-  margin: 1rem 0 0;
-}
-
-.card {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-.card-title {
-  margin: 0 0 0.25rem;
-  font-size: 1.1rem;
-}
-
-.card-title-link {
-  text-decoration: none;
-  color: #2d3748;
-}
-
-.card-title-link:hover {
-  text-decoration: underline;
-}
-
-.card-meta {
-  font-size: 0.9rem;
-  color: #718096;
-  margin: 0.25rem 0 0.75rem;
-}
-
-.card-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-/* Buttons */
-.btn {
-  display: inline-block;
-  padding: 0.4rem 0.9rem;
-  border-radius: 999px;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  text-decoration: none;
-  text-align: center;
-}
-
-.btn-small {
-  font-size: 0.8rem;
-  padding: 0.3rem 0.7rem;
-}
-
-.btn-primary {
-  background: #3182ce;
-  color: #ffffff;
-}
-
-.btn-primary:hover {
-  background: #2b6cb0;
-}
-
-.btn-secondary {
-  background: #e2e8f0;
-  color: #2d3748;
-}
-
-.btn-secondary:hover {
-  background: #cbd5e0;
-}
-
-.btn-danger {
-  background: #e53e3e;
-  color: #fff;
-}
-
-.btn-danger:hover {
-  background: #c53030;
-}
-
-/* Forms */
-.form-card {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 1.25rem 1.5rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.form-input,
-.form-textarea {
-  width: 100%;
-  padding: 0.5rem 0.6rem;
-  border-radius: 6px;
-  border: 1px solid #cbd5e0;
-  font-size: 0.9rem;
-  font-family: inherit;
-}
-
-.form-input:focus,
-.form-textarea:focus {
-  outline: none;
-  border-color: #3182ce;
-  box-shadow: 0 0 0 1px rgba(49,130,206,0.3);
-}
-
-/* Show page */
-.recipe-show-card {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 1.5rem 1.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-.recipe-section-title {
-  font-size: 1.1rem;
-  margin-top: 1rem;
-  margin-bottom: 0.25rem;
-}
-
-.recipe-ingredients-list {
-  margin-top: 0.25rem;
-  padding-left: 1.2rem;
-}
-
-.recipe-instructions-list {
-  margin-top: 0.25rem;
-  padding-left: 0;
-  list-style-position: inside;
-}
-
-.recipe-card-link {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-}
-
-.recipe-card-link:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.12);
-}
-
-.btn-primary {
-  background: #0e1c4d;
-  color: #ffffff;
-}
-
-.btn-primary:hover {
-  background: #0c173f; /* slightly darker version */
-}
-
-/* Cooking history */
-.cooking-history-card {
-  margin-top: 1rem;
-}
-
-.cooking-count {
-  margin: 0.5rem 0;
-  font-size: 0.95rem;
-  color: #4a5568;
-}
-
-.cooking-log-list {
-  list-style: none;
-  padding: 0;
-  margin: 1rem 0 0;
-}
-
-.cooking-log-list li {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0;
-  font-size: 0.9rem;
-  color: #4a5568;
-  border-bottom: 1px solid #edf2f7;
-}
-
-.btn-remove-log {
-  background: transparent;
-  border: none;
-  color: #a0aec0;
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 0 0.3rem;
-  line-height: 1;
-}
-
-.btn-remove-log:hover {
-  color: #e53e3e;
-}
-
-.cooking-log-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-overlay:not([hidden]) {
-  display: flex;
-}
-
-.modal-content {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 400px;
-  animation: modalSlideIn 0.2s ease-out;
-}
-
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.modal-header h3 {
-  margin: 0;
-  font-size: 1.1rem;
-}
-
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: #a0aec0;
-  cursor: pointer;
-  line-height: 1;
-  padding: 0;
-}
-
-.modal-close:hover {
-  color: #4a5568;
-}
-
-.modal-body {
-  padding: 1.25rem;
-}
-
-.modal-form .form-group {
-  margin-bottom: 1.25rem;
-}
-
-.modal-form .form-input {
-  width: auto;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
