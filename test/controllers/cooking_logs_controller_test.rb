@@ -2,8 +2,24 @@ require "test_helper"
 
 class CookingLogsControllerTest < ActionDispatch::IntegrationTest
   setup do
+    @user = users(:one)
     @recipe = recipes(:japchae)
     @cooking_log = cooking_logs(:japchae_yesterday)
+    sign_in_as(@user)
+  end
+
+  test "redirects to login when not authenticated" do
+    sign_out
+    post recipe_cooking_logs_url(@recipe)
+    assert_redirected_to new_session_url
+  end
+
+  test "cannot create cooking log for other users recipe" do
+    other_recipe = recipes(:other_user_recipe)
+
+    assert_no_difference("CookingLog.count") do
+      post recipe_cooking_logs_url(other_recipe)
+    end
   end
 
   test "should create cooking log for today" do
@@ -54,4 +70,3 @@ class CookingLogsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".flash-notice"
   end
 end
-

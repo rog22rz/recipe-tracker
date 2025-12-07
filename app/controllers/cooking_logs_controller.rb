@@ -20,7 +20,6 @@ class CookingLogsController < ApplicationController
   private
 
   def set_recipe
-    @recipe = Recipe.find(params[:recipe_id])
+    @recipe = Current.user.recipes.find(params[:recipe_id])
   end
 end
-

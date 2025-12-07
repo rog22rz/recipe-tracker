@@ -2,6 +2,7 @@
 
 japchae:
   title: Japchae
+  user: one
   ingredients: |
     Garlic
     Beef
@@ -16,6 +17,7 @@ japchae:
 
 pancakes:
   title: Fluffy Pancakes
+  user: one
   ingredients: |
     2 cups flour
     2 eggs
@@ -28,5 +30,12 @@ pancakes:
 
 no_ingredients:
   title: Mystery Recipe
+  user: one
   ingredients:
   instructions: Just wing it
+
+other_user_recipe:
+  title: Secret Recipe
+  user: two
+  ingredients: Secret stuff
+  instructions: Top secret

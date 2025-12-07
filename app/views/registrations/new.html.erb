@@ -1,0 +1,56 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2 class="auth-title">Create your account</h2>
+    <p class="auth-subtitle">Start saving your favorite recipes</p>
+
+    <% if @user.errors.any? %>
+      <div class="auth-errors">
+        <% @user.errors.full_messages.each do |message| %>
+          <p><%= message %></p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= form_with model: @user, url: registration_path, class: "auth-form" do |form| %>
+      <div class="form-group">
+        <%= form.label :email_address, "Email", class: "form-label" %>
+        <%= form.email_field :email_address, 
+            required: true, 
+            autofocus: true, 
+            autocomplete: "email", 
+            placeholder: "you@example.com",
+            class: "form-input" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :password, class: "form-label" %>
+        <%= form.password_field :password, 
+            required: true, 
+            autocomplete: "new-password", 
+            placeholder: "At least 6 characters",
+            minlength: 6,
+            maxlength: 72,
+            class: "form-input" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :password_confirmation, "Confirm Password", class: "form-label" %>
+        <%= form.password_field :password_confirmation, 
+            required: true, 
+            autocomplete: "new-password", 
+            placeholder: "Re-enter your password",
+            maxlength: 72,
+            class: "form-input" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.submit "Create Account", class: "btn btn-primary btn-full" %>
+      </div>
+    <% end %>
+
+    <div class="auth-footer">
+      <p>Already have an account? <%= link_to "Log in", new_session_path %></p>
+    </div>
+  </div>
+</div>
+
