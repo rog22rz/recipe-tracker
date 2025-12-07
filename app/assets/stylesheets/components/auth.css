@@ -172,15 +172,11 @@
   letter-spacing: 0.05em;
 }
 
-/* Navigation styles for logout button */
-.nav-divider {
-  color: #a0aec0;
-  margin: 0 0.25rem;
-}
-
+/* Navigation styles for header auth section */
 .nav-user {
-  color: #4a5568;
+  color: #f7fafc;
   font-size: 0.9rem;
+  opacity: 0.9;
 }
 
 .nav-link-button {

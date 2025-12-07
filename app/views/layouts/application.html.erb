@@ -23,13 +23,18 @@
         </h1>
         <nav class="nav-links">
           <% if authenticated? %>
-            <%= link_to "All Recipes", recipes_path, class: "nav-link" %>
-            <%= link_to "New Recipe", new_recipe_path, class: "nav-link" %>
-            <span class="nav-divider">|</span>
-            <span class="nav-user"><%= Current.user.email_address %></span>
-            <%= button_to "Log out", session_path, method: :delete, class: "nav-link nav-link-button" %>
+            <div class="nav-main">
+              <%= link_to "All Recipes", recipes_path, class: "nav-link" %>
+              <%= link_to "New Recipe", new_recipe_path, class: "nav-link" %>
+            </div>
+            <div class="nav-auth">
+              <span class="nav-user"><%= Current.user.email_address %></span>
+              <%= button_to "Log out", session_path, method: :delete, class: "nav-link nav-link-button" %>
+            </div>
           <% else %>
-            <%= link_to "Log in", new_session_path, class: "nav-link" %>
+            <div class="nav-auth">
+              <%= link_to "Log in", new_session_path, class: "nav-link" %>
+            </div>
           <% end %>
         </nav>
       </div>
