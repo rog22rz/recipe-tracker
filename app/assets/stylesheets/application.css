@@ -24,7 +24,7 @@
 
 /* Header / footer */
 .app-header {
-  background: #2d3748;
+  background: #d272e0;
   color: #f7fafc;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -225,5 +225,25 @@
 .recipe-ingredients-list {
   margin-top: 0.25rem;
   padding-left: 1.2rem;
+}
+
+.recipe-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.recipe-card-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+
+.btn-primary {
+  background: #0e1c4d;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: #0c173f; /* slightly darker version */
 }
 

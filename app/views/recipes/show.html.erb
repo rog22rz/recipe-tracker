@@ -22,8 +22,6 @@
     <%= button_to "Delete",
                   @recipe,
                   method: :delete,
-                  data: { confirm: "Delete this recipe?" },
-                  class: "btn btn-danger btn-small" %>
-  </div>
+                  form: { data: { turbo_confirm: "Delete this recipe?" } },
+                  class: "btn btn-danger btn-small" %>  </div>
 </div>
-

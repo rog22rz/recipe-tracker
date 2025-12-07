@@ -3,20 +3,17 @@
 <% if @recipes.any? %>
   <ul class="recipe-list">
     <% @recipes.each do |recipe| %>
-      <li class="card">
-        <h3 class="card-title">
-          <%= link_to recipe.title, recipe_path(recipe), class: "card-title-link" %>
-        </h3>
+      <li>
+        <%= link_to recipe_path(recipe), class: "card recipe-card-link" do %>
+          <h3 class="card-title"><%= recipe.title %></h3>
 
-        <div class="card-actions">
-          <%= link_to "View", recipe_path(recipe), class: "btn btn-secondary btn-small" %>
-          <%= link_to "Edit", edit_recipe_path(recipe), class: "btn btn-secondary btn-small" %>
-          <%= button_to "Delete",
-                        recipe,
-                        method: :delete,
-                        data: { confirm: "Delete this recipe?" },
-                        class: "btn btn-danger btn-small" %>
-        </div>
+          <% ingredients = recipe.ingredients.to_s.split("\n").reject(&:blank?) %>
+          <% if ingredients.any? %>
+            <p class="card-meta">
+              <%= pluralize(ingredients.size, "ingredient") %>
+            </p>
+          <% end %>
+        <% end %>
       </li>
     <% end %>
   </ul>
