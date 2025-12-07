@@ -13,7 +13,12 @@
 
   <% if @recipe.instructions.present? %>
     <h3 class="recipe-section-title">Instructions</h3>
-    <p><%= simple_format(@recipe.instructions) %></p>
+    <ol class="recipe-instructions-list">
+      <% @recipe.instructions.to_s.split("\n").each do |step| %>
+        <% next if step.strip.blank? %>
+        <li><%= step.strip %></li>
+      <% end %>
+    </ol>
   <% end %>
 
   <div class="card-actions" style="margin-top: 1rem;">
