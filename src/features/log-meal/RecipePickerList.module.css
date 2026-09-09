@@ -1,0 +1,73 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.list.desktop {
+  gap: 7px;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 1px solid var(--color-line-soft);
+  background: var(--color-surface);
+  border-radius: 14px;
+  padding: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.row.desktop {
+  gap: 11px;
+  border-radius: 12px;
+  padding: 9px;
+}
+
+.row.selected {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  color: var(--color-ink);
+  line-height: 1.15;
+}
+
+.name.desktop {
+  font-size: 16.5px;
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--color-muted);
+  margin-top: 2px;
+}
+
+.tick {
+  flex: none;
+  width: 20px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.tick.desktop {
+  width: 18px;
+}

@@ -1,0 +1,27 @@
+.dropzone {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  margin-top: 10px;
+  border-radius: 14px;
+  background: var(--color-tile);
+  border: 1px solid var(--color-line-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.dropzone.desktop {
+  height: 170px;
+}
+
+.input {
+  display: none;
+}
+
+.placeholder {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-tile-ink);
+}

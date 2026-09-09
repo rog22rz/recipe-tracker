@@ -14,7 +14,7 @@ const DEFAULT_SETTINGS: Settings = {
   layoutOverride: 'auto',
 };
 
-function dayLabel(iso: string): string {
+export function dayLabel(iso: string): string {
   const parsed = new Date(`${iso}T00:00:00Z`);
   return DOW_LABELS[parsed.getUTCDay()];
 }

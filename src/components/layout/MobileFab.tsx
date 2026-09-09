@@ -1,3 +1,11 @@
+import { useAppStore } from '../../store/store';
+
 export function MobileFab() {
-  return <button type="button">+</button>;
+  const openSheet = useAppStore((state) => state.openSheet);
+
+  return (
+    <button type="button" onClick={() => openSheet()}>
+      +
+    </button>
+  );
 }

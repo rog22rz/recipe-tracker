@@ -2,3 +2,17 @@
   width: 252px;
   flex-shrink: 0;
 }
+
+.logButton {
+  min-height: 48px;
+  border-radius: 12px;
+  background: var(--color-accent);
+  color: var(--color-surface);
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.logButton:hover {
+  background: var(--color-accent-hover);
+}
