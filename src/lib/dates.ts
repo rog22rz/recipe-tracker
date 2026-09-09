@@ -32,3 +32,34 @@ export function daysSince(isoDate: string, today: Date): number {
   const now = Date.UTC(year, month, day);
   return Math.round((now - past) / 86_400_000);
 }
+
+const MONTH_LABELS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+export function formatWeekRange(monday: Date): string {
+  const sunday = addDays(monday, 6);
+  const startMonth = MONTH_LABELS[monday.getMonth()];
+  const endMonth = MONTH_LABELS[sunday.getMonth()];
+  const startYear = monday.getFullYear();
+  const endYear = sunday.getFullYear();
+
+  if (startYear !== endYear) {
+    return `${startMonth} ${monday.getDate()}, ${startYear} — ${endMonth} ${sunday.getDate()}, ${endYear}`;
+  }
+  if (startMonth !== endMonth) {
+    return `${startMonth} ${monday.getDate()} — ${endMonth} ${sunday.getDate()}, ${endYear}`;
+  }
+  return `${startMonth} ${monday.getDate()} — ${sunday.getDate()}, ${endYear}`;
+}

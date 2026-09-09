@@ -1,0 +1,88 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-gap-12);
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-soft);
+  border-radius: var(--radius-card);
+  padding: var(--spacing-gap-8);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.card:hover {
+  border-color: var(--color-accent);
+}
+
+.card.vertical {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 10px;
+}
+
+.text {
+  min-width: 0;
+  flex: 1;
+}
+
+.text.vertical {
+  flex: none;
+  margin-top: 8px;
+}
+
+.name {
+  font-family: var(--font-heading);
+  font-size: 19px;
+  line-height: 1.15;
+  color: var(--color-ink);
+}
+
+.name.vertical {
+  font-size: 16px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+.slot {
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-chip-min);
+  color: var(--color-label);
+}
+
+.slot.vertical {
+  margin-top: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.chevron {
+  flex: none;
+  padding-right: 6px;
+  font-size: 20px;
+  color: var(--color-chevron);
+}
+
+.tileWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-tile-min);
+  overflow: hidden;
+}
+
+.tileWrap > div {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+  font-size: 26px !important;
+}
