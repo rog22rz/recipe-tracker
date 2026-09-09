@@ -1,0 +1,46 @@
+.fieldLabel {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-label);
+  font-weight: 700;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hairline {
+  height: 1px;
+  flex: 1;
+  background: var(--color-line-soft);
+}
+
+.dividerLabel {
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.nameInput {
+  margin-top: 10px;
+  width: 100%;
+  height: 48px;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 0 14px;
+  font-size: 15px;
+  color: var(--color-ink);
+  outline: none;
+}
+
+.nameInput.desktop {
+  height: 46px;
+  font-size: 14.5px;
+}

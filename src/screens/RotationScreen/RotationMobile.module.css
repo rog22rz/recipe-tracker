@@ -1,0 +1,24 @@
+.header {
+  padding: 26px var(--spacing-mobile-gutter) 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.summary {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-muted);
+  text-wrap: pretty;
+}
+
+.section {
+  padding: 24px var(--spacing-mobile-gutter) 0;
+}

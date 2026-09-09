@@ -1,0 +1,31 @@
+.mobileShell {
+  max-width: 430px;
+  min-height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-page);
+  box-shadow: var(--shadow-mobile-column);
+}
+
+.mobileTopBar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px var(--spacing-mobile-gutter) 0;
+}
+
+.mobileContent {
+  flex: 1;
+  padding-bottom: var(--spacing-mobile-tab-bar-reserve);
+}
+
+.desktopShell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.desktopContent {
+  flex: 1;
+  min-width: 0;
+  padding: var(--spacing-desktop-main-padding);
+}

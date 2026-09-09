@@ -1,0 +1,11 @@
+.tile {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-tile);
+  border: 1px solid var(--color-tile-line);
+  color: var(--color-tile-ink);
+  font-family: var(--font-heading);
+  line-height: 1;
+}
