@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { InitialTile } from '../../components/InitialTile/InitialTile';
 import { PastCooksGallery } from '../../components/PastCooksGallery/PastCooksGallery';
+import { PhotoThumb } from '../../components/PhotoThumb/PhotoThumb';
 import { StarRating } from '../../components/StarRating/StarRating';
 import { StatTrio } from '../../components/StatTrio/StatTrio';
 import styles from './RecipeDetailMobile.module.css';
@@ -13,7 +13,7 @@ export function RecipeDetailMobile({ recipe, statCells, gallery, today, onLogNow
     <div>
       <div className={styles.hero}>
         <div className={styles.heroPhoto}>
-          <InitialTile name={recipe.name} size={280} />
+          <PhotoThumb photoId={gallery[0]?.photoId} name={recipe.name} size={280} />
         </div>
         <button
           type="button"

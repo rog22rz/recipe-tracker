@@ -8,6 +8,7 @@ export interface EntryView {
   slot: MealSlot;
   recipeId: string | null;
   isRecipe: boolean;
+  photoId: string | null;
 }
 
 export interface DayRow {
@@ -89,6 +90,7 @@ export function weekRows(
           slot: entry.slot,
           recipeId: entry.recipeId,
           isRecipe: recipe !== undefined,
+          photoId: entry.photoId,
         };
       });
 

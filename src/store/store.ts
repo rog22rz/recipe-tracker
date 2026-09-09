@@ -25,10 +25,18 @@ interface SheetState {
   slot: MealSlot;
   recipeId: string | null;
   freeName: string;
+  photoId: string | null;
 }
 
 function initialSheetState(): SheetState {
-  return { open: false, day: toISODate(new Date()), slot: 'Dinner', recipeId: null, freeName: '' };
+  return {
+    open: false,
+    day: toISODate(new Date()),
+    slot: 'Dinner',
+    recipeId: null,
+    freeName: '',
+    photoId: null,
+  };
 }
 
 interface AppState {
@@ -122,6 +130,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
         slot: 'Dinner',
         recipeId: null,
         freeName: '',
+        photoId: null,
       },
     });
   },
@@ -152,14 +161,14 @@ export const useAppStore = create<AppState>()((set, get) => ({
         slot: sheet.slot,
         recipeId: sheet.recipeId,
         freeName: sheet.recipeId ? null : trimmedName || null,
-        photoId: null,
+        photoId: sheet.photoId,
       });
     } catch {
       return;
     }
 
     get().showToast(`${label} logged · ${dayLabel(sheet.day)}`);
-    set((state) => ({ sheet: { ...state.sheet, open: false, freeName: '' } }));
+    set((state) => ({ sheet: { ...state.sheet, open: false, freeName: '', photoId: null } }));
   },
 
   showToast(message) {

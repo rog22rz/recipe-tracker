@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { InitialTile } from '../../components/InitialTile/InitialTile';
 import { PastCooksGallery } from '../../components/PastCooksGallery/PastCooksGallery';
+import { PhotoThumb } from '../../components/PhotoThumb/PhotoThumb';
 import { StarRating } from '../../components/StarRating/StarRating';
 import { StatTrio } from '../../components/StatTrio/StatTrio';
 import styles from './RecipeDetailDesktop.module.css';
@@ -18,7 +18,7 @@ export function RecipeDetailDesktop({ recipe, statCells, gallery, today, onLogNo
       <div className={styles.grid}>
         <div>
           <div className={styles.heroPhoto}>
-            <InitialTile name={recipe.name} size={400} />
+            <PhotoThumb photoId={gallery[0]?.photoId} name={recipe.name} size={400} />
           </div>
           {gallery.length > 0 && (
             <>

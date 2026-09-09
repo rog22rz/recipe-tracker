@@ -9,6 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   cursor: pointer;
 }
 
@@ -24,4 +25,17 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--color-tile-ink);
+}
+
+.preview {
+  position: absolute;
+  inset: 0;
+}
+
+.preview > div {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0 !important;
 }

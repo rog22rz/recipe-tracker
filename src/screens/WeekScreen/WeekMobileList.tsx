@@ -47,6 +47,7 @@ export function WeekMobileList({ rows, settings, eyebrow }: WeekMobileListProps)
                     slot={entry.slot}
                     showSlot={settings.showMealSlots}
                     recipeId={entry.recipeId}
+                    photoId={entry.photoId}
                     orientation="horizontal"
                   />
                 ))

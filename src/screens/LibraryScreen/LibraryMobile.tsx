@@ -31,7 +31,14 @@ export function LibraryMobile({ items, query, setQuery, sort, setSort }: Library
       </div>
       <div className={styles.grid}>
         {items.map((item) => (
-          <RecipeCard key={item.id} id={item.id} name={item.name} metaLine={item.metaLine} size="mobile" />
+          <RecipeCard
+            key={item.id}
+            id={item.id}
+            name={item.name}
+            metaLine={item.metaLine}
+            photoId={item.photoId}
+            size="mobile"
+          />
         ))}
       </div>
       <div className={styles.logButton}>

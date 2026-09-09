@@ -55,6 +55,7 @@ export function WeekDesktopBoard({ rows, recipes, log, settings, eyebrow }: Week
                   slot={entry.slot}
                   showSlot={settings.showMealSlots}
                   recipeId={entry.recipeId}
+                  photoId={entry.photoId}
                   orientation="vertical"
                 />
               ))

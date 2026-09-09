@@ -1,6 +1,6 @@
 import { daysSince } from '../../lib/dates';
 import { useIsDesktop } from '../../lib/hooks/useIsDesktop';
-import { librarySorted, relativeAgo } from '../../store/selectors';
+import { galleryForRecipe, librarySorted, relativeAgo } from '../../store/selectors';
 import { useAppStore } from '../../store/store';
 import { LibraryDesktop } from './LibraryDesktop';
 import type { LibraryItem } from './library';
@@ -28,6 +28,7 @@ export function LibraryScreen() {
     id: recipe.id,
     name: recipe.name,
     metaLine: metaLineFor(recipe, today),
+    photoId: galleryForRecipe(log, recipe.id)[0]?.photoId,
   }));
 
   if (isDesktop) {

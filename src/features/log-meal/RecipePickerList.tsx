@@ -1,7 +1,7 @@
-import { InitialTile } from '../../components/InitialTile/InitialTile';
+import { PhotoThumb } from '../../components/PhotoThumb/PhotoThumb';
 import { cx } from '../../lib/cx';
 import { daysSince } from '../../lib/dates';
-import { recentFirst, relativeAgo } from '../../store/selectors';
+import { galleryForRecipe, recentFirst, relativeAgo } from '../../store/selectors';
 import { useAppStore } from '../../store/store';
 import styles from './RecipePickerList.module.css';
 
@@ -39,7 +39,11 @@ export function RecipePickerList({ variant }: RecipePickerListProps) {
             )}
             onClick={() => setSheetField('recipeId', selected ? null : recipe.id)}
           >
-            <InitialTile name={recipe.name} size={tileSize} />
+            <PhotoThumb
+              photoId={galleryForRecipe(log, recipe.id)[0]?.photoId}
+              name={recipe.name}
+              size={tileSize}
+            />
             <span className={styles.text}>
               <span className={cx(styles.name, variant === 'desktop' && styles.desktop)}>
                 {recipe.name}

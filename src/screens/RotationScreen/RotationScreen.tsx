@@ -1,6 +1,6 @@
 import { addDays, mondayOfWeek, toISODate } from '../../lib/dates';
 import { useIsDesktop } from '../../lib/hooks/useIsDesktop';
-import { daysSinceCooked, ranked, rotationLine, stale, suggestion } from '../../store/selectors';
+import { daysSinceCooked, galleryForRecipe, ranked, rotationLine, stale, suggestion } from '../../store/selectors';
 import { dayLabel, useAppStore } from '../../store/store';
 import { RotationDesktop } from './RotationDesktop';
 import { RotationMobile } from './RotationMobile';
@@ -18,7 +18,10 @@ export function RotationScreen() {
   const weekDates = Array.from({ length: 7 }, (_, offset) => toISODate(addDays(monday, offset)));
 
   const rankedRecipes = ranked(recipes, log);
-  const staleRecipes = stale(recipes, log, staleAfterDays, today);
+  const staleRecipes = stale(recipes, log, staleAfterDays, today).map((recipe) => ({
+    ...recipe,
+    photoId: galleryForRecipe(log, recipe.id)[0]?.photoId,
+  }));
   const suggested = suggestion(recipes, log, staleAfterDays, today);
   const suggestionAgo = suggested ? daysSinceCooked(log, suggested.id, today) : null;
   const summary = rotationLine(recipes, log, weekDates, staleAfterDays, today);

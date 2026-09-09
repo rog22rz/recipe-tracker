@@ -25,7 +25,14 @@ export function LibraryDesktop({ items, query, setQuery, sort, setSort }: Librar
       </div>
       <div className={styles.grid}>
         {items.map((item) => (
-          <RecipeCard key={item.id} id={item.id} name={item.name} metaLine={item.metaLine} size="desktop" />
+          <RecipeCard
+            key={item.id}
+            id={item.id}
+            name={item.name}
+            metaLine={item.metaLine}
+            photoId={item.photoId}
+            size="desktop"
+          />
         ))}
       </div>
     </div>

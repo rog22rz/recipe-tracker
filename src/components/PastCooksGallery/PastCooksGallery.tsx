@@ -2,7 +2,7 @@ import { daysSince } from '../../lib/dates';
 import { cx } from '../../lib/cx';
 import { relativeAgo } from '../../store/selectors';
 import type { LogEntry } from '../../store/types';
-import { InitialTile } from '../InitialTile/InitialTile';
+import { PhotoThumb } from '../PhotoThumb/PhotoThumb';
 import styles from './PastCooksGallery.module.css';
 
 interface PastCooksGalleryProps {
@@ -25,7 +25,7 @@ export function PastCooksGallery({
       {entries.map((entry) => (
         <div key={entry.id}>
           <div className={styles.photo}>
-            <InitialTile name={fallbackName} size={120} />
+            <PhotoThumb photoId={entry.photoId} name={fallbackName} size={120} />
           </div>
           <div className={styles.caption}>{relativeAgo(daysSince(entry.date, today))}</div>
         </div>

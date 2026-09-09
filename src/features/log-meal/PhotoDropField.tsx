@@ -1,13 +1,15 @@
 import { useRef } from 'react';
+import { PhotoThumb } from '../../components/PhotoThumb/PhotoThumb';
 import { cx } from '../../lib/cx';
 import styles from './PhotoDropField.module.css';
 
 interface PhotoDropFieldProps {
   variant: 'mobile' | 'desktop';
+  photoId: string | null;
   onPhotoSelected?: (file: File) => void;
 }
 
-export function PhotoDropField({ variant, onPhotoSelected }: PhotoDropFieldProps) {
+export function PhotoDropField({ variant, photoId, onPhotoSelected }: PhotoDropFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleFiles(files: FileList | null) {
@@ -30,10 +32,17 @@ export function PhotoDropField({ variant, onPhotoSelected }: PhotoDropFieldProps
         ref={inputRef}
         type="file"
         accept="image/*"
+        capture={variant === 'mobile' ? 'environment' : undefined}
         className={styles.input}
         onChange={(event) => handleFiles(event.target.files)}
       />
-      <span className={styles.placeholder}>Drop tonight&rsquo;s photo</span>
+      {photoId ? (
+        <div className={styles.preview}>
+          <PhotoThumb photoId={photoId} name="" size={170} />
+        </div>
+      ) : (
+        <span className={styles.placeholder}>Drop tonight&rsquo;s photo</span>
+      )}
     </button>
   );
 }
