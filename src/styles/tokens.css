@@ -1,0 +1,71 @@
+:root {
+  --color-page: #fdf1f4;
+  --color-page-outer: #f6dde6;
+  --color-surface: #fffafb;
+  --color-ink: #3b1f2b;
+  --color-ink-secondary: #55323f;
+  --color-muted: #9a7688;
+  --color-label: #a9808f;
+  --color-faint: #b58c9b;
+  --color-chip-text: #7d5b69;
+  --color-line: #f0d6df;
+  --color-line-soft: #f3dde4;
+  --color-dashed: #edcedb;
+  --color-tile: #fae4ec;
+  --color-tile-line: #f4d3de;
+  --color-tile-ink: #d19cb0;
+  --color-accent: #c2436f;
+  --color-accent-hover: #a02b56;
+  --color-accent-soft: #fbe4ee;
+  --color-accent-disabled: #e2bccc;
+  --color-chevron: #dfb9c8;
+
+  --shadow-mobile-column: 0 0 0 1px #efd3dd, 0 24px 60px rgba(140, 50, 85, 0.16);
+  --shadow-fab: 0 8px 20px rgba(150, 40, 85, 0.3);
+  --shadow-desktop-modal: 0 30px 70px rgba(140, 50, 85, 0.25);
+  --color-scrim: rgba(60, 25, 40, 0.45);
+
+  --font-heading: 'Newsreader', serif;
+  --font-ui: 'Karla', sans-serif;
+  --font-size-heading-min: 15px;
+  --font-size-heading-max: 46px;
+  --font-size-ui-min: 10px;
+  --font-size-ui-max: 16px;
+  --font-size-eyebrow-min: 11px;
+  --font-size-eyebrow-max: 12px;
+  --line-height-heading-min: 1;
+  --line-height-heading-max: 1.25;
+  --letter-spacing-eyebrow: 0.14em;
+  --letter-spacing-chip-min: 0.06em;
+  --letter-spacing-chip-max: 0.12em;
+
+  --radius-pill: 999px;
+  --radius-sheet: 20px;
+  --radius-feature-card-min: 16px;
+  --radius-feature-card-max: 18px;
+  --radius-card: 14px;
+  --radius-tile-min: 10px;
+  --radius-tile-max: 12px;
+
+  --spacing-mobile-gutter: 20px;
+  --spacing-desktop-main-padding: 38px 44px;
+  --spacing-day-row-padding-y: 14px;
+  --spacing-gap-8: 8px;
+  --spacing-gap-10: 10px;
+  --spacing-gap-12: 12px;
+  --spacing-gap-14: 14px;
+  --spacing-gap-22: 22px;
+  --spacing-gap-24: 24px;
+  --spacing-gap-44: 44px;
+  --spacing-mobile-tab-bar-reserve: 96px;
+
+  --motion-sheet-duration: 240ms;
+  --motion-sheet-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --motion-scrim-duration: 180ms;
+  --motion-scrim-easing: ease-out;
+  --motion-modal-duration: 200ms;
+  --motion-modal-easing: ease-out;
+  --motion-toast-duration: 220ms;
+  --motion-toast-easing: ease-out;
+  --motion-toast-lifetime: 2200ms;
+}

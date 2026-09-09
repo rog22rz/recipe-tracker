@@ -1,0 +1,4 @@
+.sidebar {
+  width: 252px;
+  flex-shrink: 0;
+}
