@@ -1,10 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
+import { LibraryScreen } from './screens/LibraryScreen/LibraryScreen';
 import { WeekScreen } from './screens/WeekScreen/WeekScreen';
-
-function LibraryScreen() {
-  return <p>Recipes</p>;
-}
 
 function RecipeDetailScreen() {
   return <p>Recipe detail</p>;

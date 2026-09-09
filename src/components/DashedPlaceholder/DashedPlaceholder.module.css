@@ -32,6 +32,14 @@
   text-align: center;
 }
 
+.button {
+  height: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 12px;
+  justify-content: center;
+}
+
 .icon {
   flex: none;
   font-size: 17px;

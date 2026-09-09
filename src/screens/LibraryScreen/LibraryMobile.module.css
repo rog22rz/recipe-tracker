@@ -1,0 +1,31 @@
+.header {
+  padding: 26px var(--spacing-mobile-gutter) 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.search {
+  margin-top: 16px;
+}
+
+.sorts {
+  margin-top: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-gap-14);
+  padding: 18px var(--spacing-mobile-gutter) 0;
+}
+
+.logButton {
+  padding: 22px var(--spacing-mobile-gutter) 0;
+}

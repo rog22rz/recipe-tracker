@@ -4,7 +4,7 @@ import styles from './DashedPlaceholder.module.css';
 interface DashedPlaceholderProps {
   label: string;
   onClick: () => void;
-  size?: 'default' | 'compact';
+  size?: 'default' | 'compact' | 'button';
 }
 
 export function DashedPlaceholder({ label, onClick, size = 'default' }: DashedPlaceholderProps) {
@@ -14,7 +14,7 @@ export function DashedPlaceholder({ label, onClick, size = 'default' }: DashedPl
       className={cx(styles.placeholder, styles[size])}
       onClick={onClick}
     >
-      {size === 'default' && <span className={styles.icon}>+</span>}
+      {size !== 'compact' && <span className={styles.icon}>+</span>}
       {label}
     </button>
   );
