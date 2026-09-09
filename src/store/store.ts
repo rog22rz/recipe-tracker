@@ -48,6 +48,8 @@ interface AppState {
   sheet: SheetState;
   toast: string | null;
   hydrated: boolean;
+  settingsOpen: boolean;
+  saving: boolean;
 
   hydrate(): Promise<void>;
   addLog(entry: Omit<LogEntry, 'id' | 'createdAt'>): Promise<void>;
@@ -58,6 +60,9 @@ interface AppState {
   setSheetField<K extends keyof SheetState>(key: K, value: SheetState[K]): void;
   saveLog(): Promise<void>;
   showToast(message: string): void;
+  updateSettings(partial: Partial<Settings>): Promise<void>;
+  openSettings(): void;
+  closeSettings(): void;
 }
 
 let toastTimeout: ReturnType<typeof setTimeout> | undefined;
@@ -72,6 +77,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
   sheet: initialSheetState(),
   toast: null,
   hydrated: false,
+  settingsOpen: false,
+  saving: false,
 
   hydrate() {
     if (!hydratePromise) {
@@ -144,6 +151,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
   },
 
   async saveLog() {
+    if (get().saving) return;
+
     const { sheet, recipes } = get();
     const trimmedName = sheet.freeName.trim();
 
@@ -155,6 +164,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
     const recipe = sheet.recipeId ? recipes.find((r) => r.id === sheet.recipeId) : undefined;
     const label = recipe ? recipe.name : trimmedName;
 
+    set({ saving: true });
     try {
       await get().addLog({
         date: sheet.day,
@@ -165,6 +175,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
       });
     } catch {
       return;
+    } finally {
+      set({ saving: false });
     }
 
     get().showToast(`${label} logged · ${dayLabel(sheet.day)}`);
@@ -177,5 +189,23 @@ export const useAppStore = create<AppState>()((set, get) => ({
     toastTimeout = setTimeout(() => {
       set({ toast: null });
     }, TOAST_LIFETIME_MS);
+  },
+
+  async updateSettings(partial) {
+    const settings = { ...get().settings, ...partial };
+    set({ settings });
+    try {
+      await putSettings(settings);
+    } catch {
+      get().showToast("Couldn't save settings");
+    }
+  },
+
+  openSettings() {
+    set({ settingsOpen: true });
+  },
+
+  closeSettings() {
+    set({ settingsOpen: false });
   },
 }));

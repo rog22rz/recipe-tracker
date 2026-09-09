@@ -8,6 +8,12 @@
   box-shadow: var(--shadow-mobile-column);
 }
 
+.mobileTopBar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px var(--spacing-mobile-gutter) 0;
+}
+
 .mobileContent {
   flex: 1;
   padding-bottom: var(--spacing-mobile-tab-bar-reserve);
@@ -20,4 +26,6 @@
 
 .desktopContent {
   flex: 1;
+  min-width: 0;
+  padding: var(--spacing-desktop-main-padding);
 }

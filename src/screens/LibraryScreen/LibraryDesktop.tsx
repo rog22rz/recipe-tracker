@@ -1,3 +1,4 @@
+import { DashedPlaceholder } from '../../components/DashedPlaceholder/DashedPlaceholder';
 import { RecipeCard } from '../../components/RecipeCard/RecipeCard';
 import { SearchInput } from '../../components/SearchInput/SearchInput';
 import { SortPills } from '../../components/SortPills/SortPills';
@@ -23,18 +24,24 @@ export function LibraryDesktop({ items, query, setQuery, sort, setSort }: Librar
           <SortPills options={LIBRARY_SORT_OPTIONS} active={sort} onSelect={setSort} size="desktop" />
         </div>
       </div>
-      <div className={styles.grid}>
-        {items.map((item) => (
-          <RecipeCard
-            key={item.id}
-            id={item.id}
-            name={item.name}
-            metaLine={item.metaLine}
-            photoId={item.photoId}
-            size="desktop"
-          />
-        ))}
-      </div>
+      {items.length === 0 ? (
+        <div className={styles.empty}>
+          <DashedPlaceholder label="No recipes match" size="compact" />
+        </div>
+      ) : (
+        <div className={styles.grid}>
+          {items.map((item) => (
+            <RecipeCard
+              key={item.id}
+              id={item.id}
+              name={item.name}
+              metaLine={item.metaLine}
+              photoId={item.photoId}
+              size="desktop"
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

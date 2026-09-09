@@ -43,8 +43,8 @@ export function RecipeDetailDesktop({ recipe, statCells, gallery, today, onLogNo
 
           <div className={styles.sectionLabel}>Ingredients</div>
           <div className={styles.ingredients}>
-            {recipe.ingredients.map((ingredient) => (
-              <div key={ingredient} className={styles.ingredient}>
+            {recipe.ingredients.map((ingredient, index) => (
+              <div key={`${index}-${ingredient}`} className={styles.ingredient}>
                 {ingredient}
               </div>
             ))}

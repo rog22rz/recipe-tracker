@@ -26,6 +26,10 @@
   padding: 18px var(--spacing-mobile-gutter) 0;
 }
 
+.empty {
+  padding: 18px var(--spacing-mobile-gutter) 0;
+}
+
 .logButton {
   padding: 22px var(--spacing-mobile-gutter) 0;
 }

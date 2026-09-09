@@ -28,3 +28,7 @@
   gap: var(--spacing-gap-22);
   margin-top: 30px;
 }
+
+.empty {
+  margin-top: 30px;
+}

@@ -32,6 +32,11 @@
   color: var(--color-page);
 }
 
+.chip.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .dow {
   font-size: 10px;
   letter-spacing: 0.06em;

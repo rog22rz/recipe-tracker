@@ -29,7 +29,7 @@ export function initialOf(name: string): string {
 }
 
 export function relativeAgo(days: number): string {
-  if (days === 0) return 'today';
+  if (days <= 0) return 'today';
   if (days === 1) return 'yesterday';
   if (days < 14) return `${days} days ago`;
   if (days < 60) return `${Math.round(days / 7)} weeks ago`;
@@ -37,7 +37,7 @@ export function relativeAgo(days: number): string {
 }
 
 export function compactAgo(days: number): string {
-  if (days === 0) return 'today';
+  if (days <= 0) return 'today';
   if (days === 1) return '1d';
   return `${days}d`;
 }

@@ -30,3 +30,9 @@
   padding: 12px 20px;
   font-size: 14.5px;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}

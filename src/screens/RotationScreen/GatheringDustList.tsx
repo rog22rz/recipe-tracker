@@ -14,6 +14,8 @@ export function GatheringDustList({ items, size }: GatheringDustListProps) {
   const navigate = useNavigate();
   const desktop = size === 'desktop';
 
+  if (items.length === 0) return null;
+
   return (
     <div>
       <div className={cx(styles.sectionLabel, desktop && styles.desktop)}>Gathering dust</div>

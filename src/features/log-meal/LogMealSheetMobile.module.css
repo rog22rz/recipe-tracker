@@ -94,3 +94,10 @@
 .save {
   margin-top: 20px;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim,
+  .sheet {
+    animation: none;
+  }
+}

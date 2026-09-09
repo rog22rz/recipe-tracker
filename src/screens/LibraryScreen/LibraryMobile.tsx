@@ -29,18 +29,24 @@ export function LibraryMobile({ items, query, setQuery, sort, setSort }: Library
           <SortPills options={LIBRARY_SORT_OPTIONS} active={sort} onSelect={setSort} />
         </div>
       </div>
-      <div className={styles.grid}>
-        {items.map((item) => (
-          <RecipeCard
-            key={item.id}
-            id={item.id}
-            name={item.name}
-            metaLine={item.metaLine}
-            photoId={item.photoId}
-            size="mobile"
-          />
-        ))}
-      </div>
+      {items.length === 0 ? (
+        <div className={styles.empty}>
+          <DashedPlaceholder label="No recipes match" size="compact" />
+        </div>
+      ) : (
+        <div className={styles.grid}>
+          {items.map((item) => (
+            <RecipeCard
+              key={item.id}
+              id={item.id}
+              name={item.name}
+              metaLine={item.metaLine}
+              photoId={item.photoId}
+              size="mobile"
+            />
+          ))}
+        </div>
+      )}
       <div className={styles.logButton}>
         <DashedPlaceholder label="Log a meal" onClick={() => openSheet()} size="button" />
       </div>

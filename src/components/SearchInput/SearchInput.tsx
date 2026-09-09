@@ -16,6 +16,7 @@ export function SearchInput({ value, onChange, placeholder, size = 'mobile' }: S
       value={value}
       onChange={(event) => onChange(event.target.value)}
       placeholder={placeholder}
+      aria-label={placeholder}
     />
   );
 }

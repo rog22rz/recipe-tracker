@@ -31,6 +31,7 @@ export function NameInput({ variant }: NameInputProps) {
       value={freeName}
       onChange={(event) => setSheetField('freeName', event.target.value)}
       placeholder="Just type it — no recipe needed"
+      aria-label="What was it"
       className={cx(styles.nameInput, variant === 'desktop' && styles.desktop)}
     />
   );

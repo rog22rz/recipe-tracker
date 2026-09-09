@@ -13,10 +13,13 @@ export function DayChips({ variant }: DayChipsProps) {
   const selectedDay = useAppStore((state) => state.sheet.day);
   const setSheetField = useAppStore((state) => state.setSheetField);
 
-  const monday = mondayOfWeek(new Date());
+  const today = new Date();
+  const todayIso = toISODate(today);
+  const monday = mondayOfWeek(today);
   const days = DOW_LABELS.map((dow, offset) => {
     const date = addDays(monday, offset);
-    return { dow, dayOfMonth: date.getDate(), iso: toISODate(date) };
+    const iso = toISODate(date);
+    return { dow, dayOfMonth: date.getDate(), iso, disabled: iso > todayIso };
   });
 
   return (
@@ -27,10 +30,12 @@ export function DayChips({ variant }: DayChipsProps) {
           <button
             key={day.iso}
             type="button"
+            disabled={day.disabled}
             className={cx(
               styles.chip,
               variant === 'desktop' && styles.desktop,
               selected && styles.selected,
+              day.disabled && styles.disabled,
             )}
             onClick={() => setSheetField('day', day.iso)}
           >
