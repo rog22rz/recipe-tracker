@@ -1,0 +1,29 @@
+.title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-heading-max);
+  line-height: 1;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.summary {
+  margin-top: 10px;
+  max-width: 620px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-muted);
+  text-wrap: pretty;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: var(--spacing-gap-44);
+  margin-top: 32px;
+  align-items: start;
+}
+
+.gatheringDust {
+  margin-top: 30px;
+}
