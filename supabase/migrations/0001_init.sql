@@ -28,7 +28,7 @@ create table if not exists public.log_entries (
 );
 
 create table if not exists public.settings (
-  owner_id uuid primary key references auth.users(id) on delete cascade,
+  owner_id uuid primary key default auth.uid() references auth.users(id) on delete cascade,
   stale_after_days integer not null default 14,
   show_meal_slots boolean not null default true,
   default_sort text not null default 'recent',

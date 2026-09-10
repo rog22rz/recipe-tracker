@@ -1,5 +1,11 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
+
 function timingSafeEqual(a: string, b: string): boolean {
   const bytesA = new TextEncoder().encode(a);
   const bytesB = new TextEncoder().encode(b);
@@ -12,8 +18,12 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
+    return new Response('Method not allowed', { status: 405, headers: corsHeaders });
   }
 
   const body = await req.json().catch(() => null);
@@ -23,7 +33,7 @@ Deno.serve(async (req) => {
   if (!expected || !passcode || !timingSafeEqual(passcode, expected)) {
     return new Response(JSON.stringify({ error: 'Incorrect passcode' }), {
       status: 401,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 
@@ -35,7 +45,7 @@ Deno.serve(async (req) => {
   if (!supabaseUrl || !supabaseAnonKey || !ownerEmail || !ownerPassword) {
     return new Response(JSON.stringify({ error: 'Server misconfigured' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 
@@ -49,7 +59,7 @@ Deno.serve(async (req) => {
   if (error || !data.session) {
     return new Response(JSON.stringify({ error: 'Sign-in failed' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 
@@ -58,6 +68,6 @@ Deno.serve(async (req) => {
       access_token: data.session.access_token,
       refresh_token: data.session.refresh_token,
     }),
-    { status: 200, headers: { 'Content-Type': 'application/json' } },
+    { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
   );
 });
