@@ -1,8 +1,12 @@
-import 'fake-indexeddb/auto';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { addDays, daysSince, mondayOfWeek, toISODate } from '../lib/dates';
 import { daysSinceCooked, lastCookedAt, timesCooked } from './selectors';
 import { buildRecipeHistory, buildWeek0, RECIPE_SEEDS, seed, WEEK0_BY_OFFSET } from './seed';
+
+vi.mock('../lib/db/db', () => ({
+  putRecipe: vi.fn().mockResolvedValue(undefined),
+  putLogEntry: vi.fn().mockResolvedValue(undefined),
+}));
 
 describe('buildRecipeHistory (synthetic history generation, in isolation)', () => {
   const today = new Date(2026, 8, 13);
