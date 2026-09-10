@@ -48,6 +48,7 @@ interface AppState {
   sheet: SheetState;
   toast: string | null;
   hydrated: boolean;
+  hydrateError: string | null;
   settingsOpen: boolean;
   saving: boolean;
 
@@ -77,12 +78,14 @@ export const useAppStore = create<AppState>()((set, get) => ({
   sheet: initialSheetState(),
   toast: null,
   hydrated: false,
+  hydrateError: null,
   settingsOpen: false,
   saving: false,
 
   hydrate() {
     if (!hydratePromise) {
       hydratePromise = (async () => {
+        set({ hydrateError: null });
         const [recipes, log, storedSettings] = await Promise.all([
           getAllRecipes(),
           getAllLogEntries(),
@@ -103,7 +106,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
         set({ recipes, log, settings, hydrated: true });
       })().catch((error: unknown) => {
         hydratePromise = undefined;
-        throw error;
+        set({ hydrateError: error instanceof Error ? error.message : 'Failed to load' });
       });
     }
     return hydratePromise;

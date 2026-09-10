@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Toast } from '../../components/Toast/Toast';
 import { LogMealContainer } from '../../features/log-meal/LogMealContainer';
@@ -14,18 +14,23 @@ import { MobileTabBar } from './MobileTabBar';
 export function AppShell() {
   const isDesktop = useIsDesktop();
   const hydrated = useAppStore((state) => state.hydrated);
+  const hydrateError = useAppStore((state) => state.hydrateError);
   const hydrate = useAppStore((state) => state.hydrate);
   const settingsOpen = useAppStore((state) => state.settingsOpen);
-  const [hydrationFailed, setHydrationFailed] = useState(false);
 
   useEffect(() => {
-    hydrate().catch(() => {
-      setHydrationFailed(true);
-    });
+    hydrate();
   }, [hydrate]);
 
-  if (hydrationFailed) {
-    return <p>Couldn&rsquo;t load Kitchen Log. Try reloading the page.</p>;
+  if (hydrateError) {
+    return (
+      <div className={styles.hydrateError}>
+        <p>Couldn&rsquo;t load Kitchen Log.</p>
+        <button type="button" className={styles.retryButton} onClick={() => hydrate()}>
+          Try again
+        </button>
+      </div>
+    );
   }
 
   if (!hydrated) return null;
