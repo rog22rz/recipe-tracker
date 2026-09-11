@@ -1,5 +1,5 @@
 create table if not exists public.recipes (
-  id uuid primary key default gen_random_uuid(),
+  id text primary key,
   owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
   name text not null,
   cuisine text not null,
@@ -11,19 +11,19 @@ create table if not exists public.recipes (
 );
 
 create table if not exists public.photos (
-  id uuid primary key default gen_random_uuid(),
+  id text primary key,
   owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
   created_at timestamptz not null default now()
 );
 
 create table if not exists public.log_entries (
-  id uuid primary key default gen_random_uuid(),
+  id text primary key,
   owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
   date date not null,
   slot text not null check (slot in ('Breakfast', 'Lunch', 'Dinner')),
-  recipe_id uuid references public.recipes(id) on delete set null,
+  recipe_id text references public.recipes(id) on delete set null,
   free_name text,
-  photo_id uuid references public.photos(id) on delete set null,
+  photo_id text references public.photos(id) on delete set null,
   created_at timestamptz not null default now()
 );
 
@@ -57,5 +57,7 @@ create policy "owner_read_own_photos" on storage.objects
   for select using (bucket_id = 'photos' and (storage.foldername(name))[1] = auth.uid()::text);
 create policy "owner_write_own_photos" on storage.objects
   for insert with check (bucket_id = 'photos' and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "owner_update_own_photos" on storage.objects
+  for update using (bucket_id = 'photos' and (storage.foldername(name))[1] = auth.uid()::text);
 create policy "owner_delete_own_photos" on storage.objects
   for delete using (bucket_id = 'photos' and (storage.foldername(name))[1] = auth.uid()::text);
