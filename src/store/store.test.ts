@@ -4,7 +4,6 @@ vi.mock('../lib/db/db', () => ({
   getAllRecipes: vi.fn(),
   getAllLogEntries: vi.fn(),
   getSettings: vi.fn(),
-  putRecipe: vi.fn(),
   putLogEntry: vi.fn(),
   putSettings: vi.fn(),
 }));
