@@ -100,9 +100,9 @@ export async function putSettings(settings: Settings): Promise<void> {
 }
 
 async function getOwnerId(): Promise<string> {
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) throw error ?? new Error('Not authenticated');
-  return data.user.id;
+  const { data, error } = await supabase.auth.getSession();
+  if (error || !data.session) throw error ?? new Error('Not authenticated');
+  return data.session.user.id;
 }
 
 export async function getPhoto(id: string): Promise<PhotoRow | undefined> {

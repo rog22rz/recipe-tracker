@@ -12,18 +12,18 @@ function makeQueryBuilder(result: { data: unknown; error: unknown }) {
   return builder;
 }
 
-const { from, storageUpload, storageDownload, getUser } = vi.hoisted(() => ({
+const { from, storageUpload, storageDownload, getSession } = vi.hoisted(() => ({
   from: vi.fn(),
   storageUpload: vi.fn(),
   storageDownload: vi.fn(),
-  getUser: vi.fn(),
+  getSession: vi.fn(),
 }));
 
 vi.mock('../supabase/client', () => ({
   supabase: {
     from,
     storage: { from: () => ({ upload: storageUpload, download: storageDownload }) },
-    auth: { getUser },
+    auth: { getSession },
   },
 }));
 
@@ -34,7 +34,7 @@ describe('db (Supabase-backed)', () => {
     from.mockReset();
     storageUpload.mockReset();
     storageDownload.mockReset();
-    getUser.mockReset();
+    getSession.mockReset();
   });
 
   it('getAllRecipes maps rows to Recipe[]', async () => {
@@ -95,7 +95,7 @@ describe('db (Supabase-backed)', () => {
   });
 
   it('putPhoto uploads the blob then upserts photo metadata', async () => {
-    getUser.mockResolvedValue({ data: { user: { id: 'owner-1' } }, error: null });
+    getSession.mockResolvedValue({ data: { session: { user: { id: 'owner-1' } } }, error: null });
     storageUpload.mockResolvedValue({ error: null });
     from.mockReturnValue(makeQueryBuilder({ data: null, error: null }));
     const blob = new Blob(['x']);
@@ -106,7 +106,7 @@ describe('db (Supabase-backed)', () => {
   });
 
   it('getPhoto downloads the blob and returns a PhotoRow', async () => {
-    getUser.mockResolvedValue({ data: { user: { id: 'owner-1' } }, error: null });
+    getSession.mockResolvedValue({ data: { session: { user: { id: 'owner-1' } } }, error: null });
     from.mockReturnValue(makeQueryBuilder({ data: { id: 'p1', created_at: '2026-09-09T00:00:00.000Z' }, error: null }));
     const blob = new Blob(['x']);
     storageDownload.mockResolvedValue({ data: blob, error: null });
