@@ -33,3 +33,7 @@ Thumbs.db
 
 # Internal planning scratch space (never shipped)
 aiworklist/
+
+# Supabase CLI local state
+supabase/.temp/
+supabase/.branches/
