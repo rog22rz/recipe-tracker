@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { toISODate } from '../lib/dates';
 import { getAllLogEntries, getAllRecipes, getSettings, putLogEntry, putSettings } from '../lib/db/db';
-import { seed } from './seed';
 import type { LogEntry, MealSlot, Recipe, Settings, SortKey } from './types';
 
 const TOAST_LIFETIME_MS = 2200;
@@ -95,12 +94,6 @@ export const useAppStore = create<AppState>()((set, get) => ({
         const settings = storedSettings ?? DEFAULT_SETTINGS;
         if (!storedSettings) {
           await putSettings(DEFAULT_SETTINGS);
-        }
-
-        if (recipes.length === 0) {
-          const seeded = await seed();
-          set({ recipes: seeded.recipes, log: seeded.log, settings, hydrated: true });
-          return;
         }
 
         set({ recipes, log, settings, hydrated: true });
