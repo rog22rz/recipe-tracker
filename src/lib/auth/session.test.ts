@@ -1,3 +1,4 @@
+import { FunctionsHttpError } from '@supabase/supabase-js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { invoke, setSession, getSession } = vi.hoisted(() => ({
@@ -34,10 +35,13 @@ describe('signInWithPasscode', () => {
     expect(setSession).toHaveBeenCalledWith({ access_token: 'a', refresh_token: 'r' });
   });
 
-  it('throws when the Edge Function rejects the passcode', async () => {
-    invoke.mockResolvedValue({ data: null, error: { message: 'Incorrect passcode' } });
+  it('throws with the Edge Function body message when the passcode is rejected', async () => {
+    const error = new FunctionsHttpError({
+      json: async () => ({ error: 'Incorrect passcode' }),
+    });
+    invoke.mockResolvedValue({ data: null, error });
 
-    await expect(signInWithPasscode('wrong')).rejects.toThrow();
+    await expect(signInWithPasscode('wrong')).rejects.toThrow('Incorrect passcode');
     expect(setSession).not.toHaveBeenCalled();
   });
 });
