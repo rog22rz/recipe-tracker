@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { toISODate } from '../lib/dates';
-import { getAllLogEntries, getAllRecipes, getSettings, putLogEntry, putSettings } from '../lib/db/db';
+import { getAllLogEntries, getAllRecipes, getSettings, putLogEntry, putRecipe, putSettings } from '../lib/db/db';
 import type { LogEntry, MealSlot, Recipe, Settings, SortKey } from './types';
 
 const TOAST_LIFETIME_MS = 2200;
@@ -38,6 +38,17 @@ function initialSheetState(): SheetState {
   };
 }
 
+interface RecipeSheetState {
+  open: boolean;
+  name: string;
+  ingredientsText: string;
+  notes: string;
+}
+
+function initialRecipeSheetState(): RecipeSheetState {
+  return { open: false, name: '', ingredientsText: '', notes: '' };
+}
+
 interface AppState {
   recipes: Recipe[];
   log: LogEntry[];
@@ -50,6 +61,8 @@ interface AppState {
   hydrateError: string | null;
   settingsOpen: boolean;
   saving: boolean;
+  recipeSheet: RecipeSheetState;
+  savingRecipe: boolean;
 
   hydrate(): Promise<void>;
   addLog(entry: Omit<LogEntry, 'id' | 'createdAt'>): Promise<void>;
@@ -63,6 +76,11 @@ interface AppState {
   updateSettings(partial: Partial<Settings>): Promise<void>;
   openSettings(): void;
   closeSettings(): void;
+  openRecipeSheet(): void;
+  closeRecipeSheet(): void;
+  setRecipeSheetField<K extends keyof RecipeSheetState>(key: K, value: RecipeSheetState[K]): void;
+  addRecipe(recipe: Omit<Recipe, 'id'>): Promise<void>;
+  saveRecipe(): Promise<void>;
 }
 
 let toastTimeout: ReturnType<typeof setTimeout> | undefined;
@@ -80,6 +98,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
   hydrateError: null,
   settingsOpen: false,
   saving: false,
+  recipeSheet: initialRecipeSheetState(),
+  savingRecipe: false,
 
   hydrate() {
     if (!hydratePromise) {
@@ -112,6 +132,18 @@ export const useAppStore = create<AppState>()((set, get) => ({
       await putLogEntry(newEntry);
     } catch (error) {
       set((state) => ({ log: state.log.filter((existing) => existing.id !== newEntry.id) }));
+      get().showToast("Couldn't save — try again");
+      throw error;
+    }
+  },
+
+  async addRecipe(recipe) {
+    const newRecipe: Recipe = { ...recipe, id: crypto.randomUUID() };
+    set((state) => ({ recipes: [...state.recipes, newRecipe] }));
+    try {
+      await putRecipe(newRecipe);
+    } catch (error) {
+      set((state) => ({ recipes: state.recipes.filter((existing) => existing.id !== newRecipe.id) }));
       get().showToast("Couldn't save — try again");
       throw error;
     }
@@ -177,6 +209,53 @@ export const useAppStore = create<AppState>()((set, get) => ({
 
     get().showToast(`${label} logged · ${dayLabel(sheet.day)}`);
     set((state) => ({ sheet: { ...state.sheet, open: false, freeName: '', photoId: null } }));
+  },
+
+  openRecipeSheet() {
+    set({ recipeSheet: { ...initialRecipeSheetState(), open: true } });
+  },
+
+  closeRecipeSheet() {
+    set((state) => ({ recipeSheet: { ...state.recipeSheet, open: false } }));
+  },
+
+  setRecipeSheetField(key, value) {
+    set((state) => ({ recipeSheet: { ...state.recipeSheet, [key]: value } }));
+  },
+
+  async saveRecipe() {
+    if (get().savingRecipe) return;
+
+    const { recipeSheet } = get();
+    const name = recipeSheet.name.trim();
+    if (!name) {
+      get().showToast('Give it a name');
+      return;
+    }
+
+    const ingredients = recipeSheet.ingredientsText
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    set({ savingRecipe: true });
+    try {
+      await get().addRecipe({
+        name,
+        cuisine: '',
+        minutes: 0,
+        rating: 0,
+        ingredients,
+        notes: recipeSheet.notes.trim(),
+      });
+    } catch {
+      return;
+    } finally {
+      set({ savingRecipe: false });
+    }
+
+    get().showToast(`${name} added`);
+    set({ recipeSheet: initialRecipeSheetState() });
   },
 
   showToast(message) {
