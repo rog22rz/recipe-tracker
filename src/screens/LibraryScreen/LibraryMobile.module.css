@@ -33,3 +33,7 @@
 .logButton {
   padding: 22px var(--spacing-mobile-gutter) 0;
 }
+
+.addButton {
+  padding: 12px var(--spacing-mobile-gutter) 0;
+}

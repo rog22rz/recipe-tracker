@@ -17,6 +17,7 @@ interface LibraryMobileProps {
 
 export function LibraryMobile({ items, query, setQuery, sort, setSort }: LibraryMobileProps) {
   const openSheet = useAppStore((state) => state.openSheet);
+  const openRecipeSheet = useAppStore((state) => state.openRecipeSheet);
 
   return (
     <div>
@@ -49,6 +50,9 @@ export function LibraryMobile({ items, query, setQuery, sort, setSort }: Library
       )}
       <div className={styles.logButton}>
         <DashedPlaceholder label="Log a meal" onClick={() => openSheet()} size="button" />
+      </div>
+      <div className={styles.addButton}>
+        <DashedPlaceholder label="Add a recipe" onClick={() => openRecipeSheet()} size="button" />
       </div>
     </div>
   );

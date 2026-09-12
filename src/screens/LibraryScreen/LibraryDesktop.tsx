@@ -2,6 +2,7 @@ import { DashedPlaceholder } from '../../components/DashedPlaceholder/DashedPlac
 import { RecipeCard } from '../../components/RecipeCard/RecipeCard';
 import { SearchInput } from '../../components/SearchInput/SearchInput';
 import { SortPills } from '../../components/SortPills/SortPills';
+import { useAppStore } from '../../store/store';
 import type { SortKey } from '../../store/types';
 import { LIBRARY_SORT_OPTIONS, type LibraryItem } from './library';
 import styles from './LibraryDesktop.module.css';
@@ -15,6 +16,8 @@ interface LibraryDesktopProps {
 }
 
 export function LibraryDesktop({ items, query, setQuery, sort, setSort }: LibraryDesktopProps) {
+  const openRecipeSheet = useAppStore((state) => state.openRecipeSheet);
+
   return (
     <div>
       <div className={styles.header}>
@@ -22,6 +25,9 @@ export function LibraryDesktop({ items, query, setQuery, sort, setSort }: Librar
         <div className={styles.controls}>
           <SearchInput value={query} onChange={setQuery} placeholder="Search recipes" size="desktop" />
           <SortPills options={LIBRARY_SORT_OPTIONS} active={sort} onSelect={setSort} size="desktop" />
+          <button type="button" className={styles.addButton} onClick={() => openRecipeSheet()}>
+            + Add recipe
+          </button>
         </div>
       </div>
       {items.length === 0 ? (
