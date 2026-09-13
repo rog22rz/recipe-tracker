@@ -1,0 +1,39 @@
+.header {
+  padding: 26px var(--spacing-mobile-gutter) 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.sorts {
+  margin-top: 12px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gap-14);
+  padding: 18px var(--spacing-mobile-gutter) 0;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ago {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.empty {
+  padding: 18px var(--spacing-mobile-gutter) 0;
+}
