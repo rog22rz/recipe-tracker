@@ -1,5 +1,6 @@
 export type MealSlot = 'Breakfast' | 'Lunch' | 'Dinner';
 export type SortKey = 'cooked' | 'recent' | 'az';
+export type TimeRangeKey = 'week' | 'month' | 'year';
 
 export interface Recipe {
   id: string;

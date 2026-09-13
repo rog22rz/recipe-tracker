@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { toISODate } from '../lib/dates';
 import { getAllLogEntries, getAllRecipes, getSettings, putLogEntry, putRecipe, putSettings } from '../lib/db/db';
-import type { LogEntry, MealSlot, Recipe, Settings, SortKey } from './types';
+import type { LogEntry, MealSlot, Recipe, Settings, SortKey, TimeRangeKey } from './types';
 
 const TOAST_LIFETIME_MS = 2200;
 const DOW_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -55,6 +55,7 @@ interface AppState {
   settings: Settings;
   sort: SortKey | null;
   query: string;
+  historyRange: TimeRangeKey;
   sheet: SheetState;
   toast: string | null;
   hydrated: boolean;
@@ -68,6 +69,7 @@ interface AppState {
   addLog(entry: Omit<LogEntry, 'id' | 'createdAt'>): Promise<void>;
   setSort(sort: SortKey): void;
   setQuery(query: string): void;
+  setHistoryRange(range: TimeRangeKey): void;
   openSheet(day?: string): void;
   closeSheet(): void;
   setSheetField<K extends keyof SheetState>(key: K, value: SheetState[K]): void;
@@ -92,6 +94,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
   settings: DEFAULT_SETTINGS,
   sort: null,
   query: '',
+  historyRange: 'week',
   sheet: initialSheetState(),
   toast: null,
   hydrated: false,
@@ -155,6 +158,10 @@ export const useAppStore = create<AppState>()((set, get) => ({
 
   setQuery(query) {
     set({ query });
+  },
+
+  setHistoryRange(historyRange) {
+    set({ historyRange });
   },
 
   openSheet(day) {

@@ -64,6 +64,20 @@ function recipeById(recipes: Recipe[], id: string): Recipe | undefined {
   return recipes.find((recipe) => recipe.id === id);
 }
 
+function entryView(entry: LogEntry, recipes: Recipe[]): EntryView {
+  const recipe = entry.recipeId ? recipeById(recipes, entry.recipeId) : undefined;
+  const name = recipe ? recipe.name : (entry.freeName ?? 'Untitled meal');
+  return {
+    id: entry.id,
+    name,
+    initial: initialOf(name),
+    slot: entry.slot,
+    recipeId: entry.recipeId,
+    isRecipe: recipe !== undefined,
+    photoId: entry.photoId,
+  };
+}
+
 export function weekRows(
   log: LogEntry[],
   recipes: Recipe[],
@@ -80,19 +94,7 @@ export function weekRows(
 
     const entries: EntryView[] = log
       .filter((entry) => entry.date === iso)
-      .map((entry) => {
-        const recipe = entry.recipeId ? recipeById(recipes, entry.recipeId) : undefined;
-        const name = recipe ? recipe.name : (entry.freeName ?? 'Untitled meal');
-        return {
-          id: entry.id,
-          name,
-          initial: initialOf(name),
-          slot: entry.slot,
-          recipeId: entry.recipeId,
-          isRecipe: recipe !== undefined,
-          photoId: entry.photoId,
-        };
-      });
+      .map((entry) => entryView(entry, recipes));
 
     return {
       dow,
@@ -104,6 +106,30 @@ export function weekRows(
       emptyLabel: isToday ? 'Nothing logged today' : 'Leftovers / out',
     };
   });
+}
+
+export interface HistoryEntry extends EntryView {
+  date: string;
+  createdAt: number;
+}
+
+export function historyEntries(
+  log: LogEntry[],
+  recipes: Recipe[],
+  today: Date,
+  windowDays: number,
+): HistoryEntry[] {
+  return log
+    .filter((entry) => {
+      const since = daysSince(entry.date, today);
+      return since >= 0 && since < windowDays;
+    })
+    .map((entry) => ({
+      ...entryView(entry, recipes),
+      date: entry.date,
+      createdAt: entry.createdAt,
+    }))
+    .sort((a, b) => (a.date === b.date ? b.createdAt - a.createdAt : a.date < b.date ? 1 : -1));
 }
 
 export function ranked(
