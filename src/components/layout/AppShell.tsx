@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Toast } from '../../components/Toast/Toast';
+import { AddRecipeContainer } from '../../features/add-recipe/AddRecipeContainer';
 import { LogMealContainer } from '../../features/log-meal/LogMealContainer';
 import { SettingsButton } from '../../features/settings/SettingsButton';
 import { SettingsPanel } from '../../features/settings/SettingsPanel';
@@ -57,6 +58,7 @@ export function AppShell() {
         </div>
       )}
       <LogMealContainer />
+      <AddRecipeContainer />
       <Toast />
       {settingsOpen && <SettingsPanel />}
     </>
