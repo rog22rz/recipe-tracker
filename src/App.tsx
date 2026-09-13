@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
 import { PasscodeGate } from './lib/auth/PasscodeGate';
+import { HistoryScreen } from './screens/HistoryScreen/HistoryScreen';
 import { LibraryScreen } from './screens/LibraryScreen/LibraryScreen';
 import { RecipeDetailScreen } from './screens/RecipeDetailScreen/RecipeDetailScreen';
 import { RotationScreen } from './screens/RotationScreen/RotationScreen';
@@ -16,6 +17,7 @@ export function App() {
             <Route path="/recipes" element={<LibraryScreen />} />
             <Route path="/recipes/:id" element={<RecipeDetailScreen />} />
             <Route path="/rotation" element={<RotationScreen />} />
+            <Route path="/history" element={<HistoryScreen />} />
           </Route>
         </Routes>
       </BrowserRouter>

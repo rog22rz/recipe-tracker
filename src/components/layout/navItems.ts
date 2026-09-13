@@ -9,4 +9,5 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/', glyph: '▤', label: 'Week', end: true },
   { to: '/recipes', glyph: '◉', label: 'Recipes', end: false },
   { to: '/rotation', glyph: '▮', label: 'Rotation', end: true },
+  { to: '/history', glyph: '◷', label: 'History', end: true },
 ];
