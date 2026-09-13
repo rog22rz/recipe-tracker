@@ -4,6 +4,7 @@ import {
   compactAgo,
   daysSinceCooked,
   galleryForRecipe,
+  historyEntries,
   initialOf,
   lastCookedAt,
   librarySorted,
@@ -315,5 +316,49 @@ describe('weekRows', () => {
     const log: LogEntry[] = [entry({ id: '1', date: toISODate(today), recipeId: null, freeName: null })];
     const rows = weekRows(log, [], today, settings);
     expect(rows[2].entries[0].name).toBe('Untitled meal');
+  });
+});
+
+describe('historyEntries', () => {
+  it('includes entries within the trailing window and excludes entries exactly at the boundary', () => {
+    const today = new Date(2026, 8, 30);
+    const log: LogEntry[] = [
+      entry({ id: 'in', date: '2026-09-24', recipeId: 'cacio', createdAt: 1 }), // 6 days ago
+      entry({ id: 'boundary', date: '2026-09-23', recipeId: 'cacio', createdAt: 2 }), // 7 days ago
+    ];
+    const result = historyEntries(log, [cacio], today, 7);
+    expect(result.map((e) => e.id)).toEqual(['in']);
+  });
+
+  it('resolves recipe name via recipeId, falls back to freeName, then Untitled meal', () => {
+    const today = new Date(2026, 8, 30);
+    const log: LogEntry[] = [
+      entry({ id: '1', date: '2026-09-29', recipeId: 'cacio', createdAt: 1 }),
+      entry({ id: '2', date: '2026-09-29', recipeId: null, freeName: 'Leftovers', createdAt: 2 }),
+      entry({ id: '3', date: '2026-09-29', recipeId: null, freeName: null, createdAt: 3 }),
+    ];
+    const result = historyEntries(log, [cacio], today, 7);
+    const byId = Object.fromEntries(result.map((e) => [e.id, e]));
+    expect(byId['1'].name).toBe('Cacio e pepe');
+    expect(byId['1'].isRecipe).toBe(true);
+    expect(byId['2'].name).toBe('Leftovers');
+    expect(byId['2'].isRecipe).toBe(false);
+    expect(byId['3'].name).toBe('Untitled meal');
+  });
+
+  it('sorts newest date first, and within the same date newest createdAt first', () => {
+    const today = new Date(2026, 8, 30);
+    const log: LogEntry[] = [
+      entry({ id: 'older-day', date: '2026-09-25', recipeId: 'cacio', createdAt: 1 }),
+      entry({ id: 'newer-day-early', date: '2026-09-29', recipeId: 'cacio', createdAt: 1 }),
+      entry({ id: 'newer-day-late', date: '2026-09-29', recipeId: 'cacio', createdAt: 2 }),
+    ];
+    const result = historyEntries(log, [cacio], today, 7);
+    expect(result.map((e) => e.id)).toEqual(['newer-day-late', 'newer-day-early', 'older-day']);
+  });
+
+  it('returns an empty array when nothing falls in range', () => {
+    const today = new Date(2026, 8, 30);
+    expect(historyEntries([], [cacio], today, 7)).toEqual([]);
   });
 });
