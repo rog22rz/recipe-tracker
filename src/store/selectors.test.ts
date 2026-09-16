@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { toISODate } from '../lib/dates';
+import { addDays, toISODate } from '../lib/dates';
 import {
   compactAgo,
   daysSinceCooked,
@@ -316,6 +316,27 @@ describe('weekRows', () => {
     const log: LogEntry[] = [entry({ id: '1', date: toISODate(today), recipeId: null, freeName: null })];
     const rows = weekRows(log, [], today, settings);
     expect(rows[2].entries[0].name).toBe('Untitled meal');
+  });
+
+  it('pages to a previous week via weekOffset while keeping isToday tied to the real today', () => {
+    const today = new Date(2026, 8, 9); // Wednesday, Sep 9 2026 — current week is Sep 7–13
+    const prevMonday = addDays(today, -7 - 2); // Monday of the week before (Sep 7 - 7 = Aug 31)
+    const log: LogEntry[] = [
+      entry({ id: '1', date: toISODate(addDays(prevMonday, 2)), recipeId: 'cacio', slot: 'Dinner' }),
+    ];
+
+    const rows = weekRows(log, [cacio], today, settings, -1);
+
+    expect(rows.map((r) => r.iso)).toEqual([0, 1, 2, 3, 4, 5, 6].map((n) => toISODate(addDays(prevMonday, n))));
+    expect(rows.every((r) => !r.isToday)).toBe(true);
+    expect(rows[2].entries[0].name).toBe('Cacio e pepe');
+  });
+
+  it('defaults weekOffset to 0, matching the current-week behavior', () => {
+    const today = new Date(2026, 8, 9);
+    const withDefault = weekRows([], [cacio], today, settings);
+    const withExplicitZero = weekRows([], [cacio], today, settings, 0);
+    expect(withDefault).toEqual(withExplicitZero);
   });
 });
 
