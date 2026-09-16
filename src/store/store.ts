@@ -56,6 +56,7 @@ interface AppState {
   sort: SortKey | null;
   query: string;
   historyRange: TimeRangeKey;
+  weekOffset: number;
   sheet: SheetState;
   toast: string | null;
   hydrated: boolean;
@@ -70,6 +71,9 @@ interface AppState {
   setSort(sort: SortKey): void;
   setQuery(query: string): void;
   setHistoryRange(range: TimeRangeKey): void;
+  goToPreviousWeek(): void;
+  goToNextWeek(): void;
+  goToCurrentWeek(): void;
   openSheet(day?: string): void;
   closeSheet(): void;
   setSheetField<K extends keyof SheetState>(key: K, value: SheetState[K]): void;
@@ -95,6 +99,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
   sort: null,
   query: '',
   historyRange: 'week',
+  weekOffset: 0,
   sheet: initialSheetState(),
   toast: null,
   hydrated: false,
@@ -162,6 +167,18 @@ export const useAppStore = create<AppState>()((set, get) => ({
 
   setHistoryRange(historyRange) {
     set({ historyRange });
+  },
+
+  goToPreviousWeek() {
+    set((state) => ({ weekOffset: state.weekOffset - 1 }));
+  },
+
+  goToNextWeek() {
+    set((state) => ({ weekOffset: Math.min(0, state.weekOffset + 1) }));
+  },
+
+  goToCurrentWeek() {
+    set({ weekOffset: 0 });
   },
 
   openSheet(day) {

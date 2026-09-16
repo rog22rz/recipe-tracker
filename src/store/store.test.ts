@@ -138,3 +138,30 @@ describe('saveRecipe', () => {
     expect(useAppStore.getState().recipeSheet.open).toBe(false);
   });
 });
+
+describe('week navigation', () => {
+  beforeEach(() => {
+    useAppStore.setState({ weekOffset: 0 });
+  });
+
+  it('goToPreviousWeek decrements weekOffset with no lower bound', () => {
+    useAppStore.getState().goToPreviousWeek();
+    useAppStore.getState().goToPreviousWeek();
+    expect(useAppStore.getState().weekOffset).toBe(-2);
+  });
+
+  it('goToNextWeek increments weekOffset but clamps at 0', () => {
+    useAppStore.setState({ weekOffset: -1 });
+    useAppStore.getState().goToNextWeek();
+    expect(useAppStore.getState().weekOffset).toBe(0);
+
+    useAppStore.getState().goToNextWeek();
+    expect(useAppStore.getState().weekOffset).toBe(0);
+  });
+
+  it('goToCurrentWeek resets weekOffset to 0', () => {
+    useAppStore.setState({ weekOffset: -5 });
+    useAppStore.getState().goToCurrentWeek();
+    expect(useAppStore.getState().weekOffset).toBe(0);
+  });
+});
