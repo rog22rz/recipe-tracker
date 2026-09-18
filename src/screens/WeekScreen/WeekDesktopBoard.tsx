@@ -66,17 +66,24 @@ export function WeekDesktopBoard({
                 size="compact"
               />
             ) : (
-              row.entries.map((entry) => (
-                <EntryCard
-                  key={entry.id}
-                  name={entry.name}
-                  slot={entry.slot}
-                  showSlot={settings.showMealSlots}
-                  recipeId={entry.recipeId}
-                  photoId={entry.photoId}
-                  orientation="vertical"
+              <>
+                {row.entries.map((entry) => (
+                  <EntryCard
+                    key={entry.id}
+                    name={entry.name}
+                    slot={entry.slot}
+                    showSlot={settings.showMealSlots}
+                    recipeId={entry.recipeId}
+                    photoId={entry.photoId}
+                    orientation="vertical"
+                  />
+                ))}
+                <DashedPlaceholder
+                  label="Add another meal"
+                  onClick={() => openSheet(row.iso)}
+                  size="compact"
                 />
-              ))
+              </>
             )}
           </div>
         ))}
