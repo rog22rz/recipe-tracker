@@ -2,6 +2,13 @@
   padding: 26px var(--spacing-mobile-gutter) 8px;
 }
 
+.eyebrowRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-gap-12);
+}
+
 .eyebrow {
   font-size: 12px;
   font-weight: 700;

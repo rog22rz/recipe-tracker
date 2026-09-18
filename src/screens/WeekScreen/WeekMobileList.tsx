@@ -1,5 +1,6 @@
 import { DashedPlaceholder } from '../../components/DashedPlaceholder/DashedPlaceholder';
 import { EntryCard } from '../../components/EntryCard/EntryCard';
+import { WeekNav } from '../../components/WeekNav/WeekNav';
 import { cx } from '../../lib/cx';
 import type { DayRow } from '../../store/selectors';
 import { useAppStore } from '../../store/store';
@@ -10,18 +11,33 @@ interface WeekMobileListProps {
   rows: DayRow[];
   settings: Settings;
   eyebrow: string;
+  isCurrentWeek: boolean;
+  onPrev: () => void;
+  onNext: () => void;
+  onToday: () => void;
 }
 
-export function WeekMobileList({ rows, settings, eyebrow }: WeekMobileListProps) {
+export function WeekMobileList({
+  rows,
+  settings,
+  eyebrow,
+  isCurrentWeek,
+  onPrev,
+  onNext,
+  onToday,
+}: WeekMobileListProps) {
   const openSheet = useAppStore((state) => state.openSheet);
   const weekCount = rows.reduce((sum, row) => sum + row.entries.length, 0);
 
   return (
     <div>
       <div className={styles.header}>
-        <div className={styles.eyebrow}>{eyebrow}</div>
+        <div className={styles.eyebrowRow}>
+          <div className={styles.eyebrow}>{eyebrow}</div>
+          <WeekNav isCurrentWeek={isCurrentWeek} onPrev={onPrev} onNext={onNext} onToday={onToday} />
+        </div>
         <div className={styles.headerRow}>
-          <h1 className={styles.title}>This week</h1>
+          <h1 className={styles.title}>{isCurrentWeek ? 'This week' : 'Past week'}</h1>
           <div className={styles.count}>
             {weekCount} meals
             <br />

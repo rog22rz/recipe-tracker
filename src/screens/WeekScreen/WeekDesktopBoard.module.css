@@ -6,6 +6,12 @@
   flex-wrap: wrap;
 }
 
+.eyebrowRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-gap-12);
+}
+
 .eyebrow {
   font-size: 11.5px;
   font-weight: 700;
