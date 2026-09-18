@@ -81,11 +81,12 @@ function entryView(entry: LogEntry, recipes: Recipe[]): EntryView {
 export function weekRows(
   log: LogEntry[],
   recipes: Recipe[],
-  anchorDate: Date,
+  today: Date,
   _settings: Settings,
+  weekOffset = 0,
 ): DayRow[] {
-  const monday = mondayOfWeek(anchorDate);
-  const todayIso = toISODate(anchorDate);
+  const monday = addDays(mondayOfWeek(today), weekOffset * 7);
+  const todayIso = toISODate(today);
 
   return DOW_LABELS.map((dow, offset) => {
     const date = addDays(monday, offset);
