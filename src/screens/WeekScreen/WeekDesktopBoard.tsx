@@ -1,5 +1,6 @@
 import { DashedPlaceholder } from '../../components/DashedPlaceholder/DashedPlaceholder';
 import { EntryCard } from '../../components/EntryCard/EntryCard';
+import { WeekNav } from '../../components/WeekNav/WeekNav';
 import { cx } from '../../lib/cx';
 import type { DayRow } from '../../store/selectors';
 import { rotationLine } from '../../store/selectors';
@@ -13,9 +14,23 @@ interface WeekDesktopBoardProps {
   log: LogEntry[];
   settings: Settings;
   eyebrow: string;
+  isCurrentWeek: boolean;
+  onPrev: () => void;
+  onNext: () => void;
+  onToday: () => void;
 }
 
-export function WeekDesktopBoard({ rows, recipes, log, settings, eyebrow }: WeekDesktopBoardProps) {
+export function WeekDesktopBoard({
+  rows,
+  recipes,
+  log,
+  settings,
+  eyebrow,
+  isCurrentWeek,
+  onPrev,
+  onNext,
+  onToday,
+}: WeekDesktopBoardProps) {
   const openSheet = useAppStore((state) => state.openSheet);
   const summary = rotationLine(
     recipes,
@@ -29,8 +44,11 @@ export function WeekDesktopBoard({ rows, recipes, log, settings, eyebrow }: Week
     <div>
       <div className={styles.header}>
         <div>
-          <div className={styles.eyebrow}>{eyebrow}</div>
-          <h1 className={styles.title}>This week</h1>
+          <div className={styles.eyebrowRow}>
+            <span className={styles.eyebrow}>{eyebrow}</span>
+            <WeekNav isCurrentWeek={isCurrentWeek} onPrev={onPrev} onNext={onNext} onToday={onToday} />
+          </div>
+          <h1 className={styles.title}>{isCurrentWeek ? 'This week' : 'Past week'}</h1>
         </div>
         <div className={styles.summary}>{summary}</div>
       </div>
