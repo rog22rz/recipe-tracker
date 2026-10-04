@@ -71,6 +71,11 @@ export async function putLogEntry(entry: LogEntry): Promise<void> {
   if (error) throw error;
 }
 
+export async function deleteLogEntry(id: string): Promise<void> {
+  const { error } = await supabase.from('log_entries').delete().eq('id', id);
+  if (error) throw error;
+}
+
 export async function getSettings(): Promise<Settings | undefined> {
   const { data, error } = await supabase
     .from('settings')
@@ -134,5 +139,14 @@ export async function putPhoto(photo: PhotoRow): Promise<void> {
     id: photo.id,
     created_at: new Date(photo.createdAt).toISOString(),
   });
+  if (error) throw error;
+}
+
+export async function deletePhoto(id: string): Promise<void> {
+  const ownerId = await getOwnerId();
+  const { error: storageError } = await supabase.storage.from('photos').remove([`${ownerId}/${id}`]);
+  if (storageError) throw storageError;
+
+  const { error } = await supabase.from('photos').delete().eq('id', id);
   if (error) throw error;
 }

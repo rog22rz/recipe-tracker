@@ -3,7 +3,7 @@ import type { LogEntry, Recipe, Settings } from '../../store/types';
 
 function makeQueryBuilder(result: { data: unknown; error: unknown }) {
   const builder: Record<string, unknown> = {};
-  const methods = ['select', 'eq', 'upsert'];
+  const methods = ['select', 'eq', 'upsert', 'delete'];
   for (const method of methods) {
     builder[method] = vi.fn().mockReturnValue(builder);
   }
@@ -12,28 +12,40 @@ function makeQueryBuilder(result: { data: unknown; error: unknown }) {
   return builder;
 }
 
-const { from, storageUpload, storageDownload, getSession } = vi.hoisted(() => ({
+const { from, storageUpload, storageDownload, storageRemove, getSession } = vi.hoisted(() => ({
   from: vi.fn(),
   storageUpload: vi.fn(),
   storageDownload: vi.fn(),
+  storageRemove: vi.fn(),
   getSession: vi.fn(),
 }));
 
 vi.mock('../supabase/client', () => ({
   supabase: {
     from,
-    storage: { from: () => ({ upload: storageUpload, download: storageDownload }) },
+    storage: { from: () => ({ upload: storageUpload, download: storageDownload, remove: storageRemove }) },
     auth: { getSession },
   },
 }));
 
-import { getAllLogEntries, getAllRecipes, getPhoto, getSettings, putLogEntry, putPhoto, putRecipe } from './db';
+import {
+  deleteLogEntry,
+  deletePhoto,
+  getAllLogEntries,
+  getAllRecipes,
+  getPhoto,
+  getSettings,
+  putLogEntry,
+  putPhoto,
+  putRecipe,
+} from './db';
 
 describe('db (Supabase-backed)', () => {
   beforeEach(() => {
     from.mockReset();
     storageUpload.mockReset();
     storageDownload.mockReset();
+    storageRemove.mockReset();
     getSession.mockReset();
   });
 
@@ -115,5 +127,35 @@ describe('db (Supabase-backed)', () => {
 
     expect(storageDownload).toHaveBeenCalledWith('owner-1/p1');
     expect(photo).toEqual({ id: 'p1', blob, createdAt: new Date('2026-09-09T00:00:00.000Z').getTime() });
+  });
+
+  it('deleteLogEntry deletes by id without throwing on success', async () => {
+    from.mockReturnValue(makeQueryBuilder({ data: null, error: null }));
+
+    await expect(deleteLogEntry('1')).resolves.toBeUndefined();
+    expect(from).toHaveBeenCalledWith('log_entries');
+  });
+
+  it('deleteLogEntry throws when Supabase returns an error', async () => {
+    from.mockReturnValue(makeQueryBuilder({ data: null, error: new Error('network down') }));
+
+    await expect(deleteLogEntry('1')).rejects.toThrow('network down');
+  });
+
+  it('deletePhoto removes the storage object then deletes the photos row', async () => {
+    getSession.mockResolvedValue({ data: { session: { user: { id: 'owner-1' } } }, error: null });
+    storageRemove.mockResolvedValue({ error: null });
+    from.mockReturnValue(makeQueryBuilder({ data: null, error: null }));
+
+    await expect(deletePhoto('p1')).resolves.toBeUndefined();
+    expect(storageRemove).toHaveBeenCalledWith(['owner-1/p1']);
+    expect(from).toHaveBeenCalledWith('photos');
+  });
+
+  it('deletePhoto throws when the storage removal fails', async () => {
+    getSession.mockResolvedValue({ data: { session: { user: { id: 'owner-1' } } }, error: null });
+    storageRemove.mockResolvedValue({ error: new Error('storage down') });
+
+    await expect(deletePhoto('p1')).rejects.toThrow('storage down');
   });
 });
