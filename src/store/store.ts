@@ -36,6 +36,7 @@ interface SheetState {
   recipeId: string | null;
   freeName: string;
   photoId: string | null;
+  editingId: string | null;
 }
 
 function initialSheetState(): SheetState {
@@ -46,6 +47,7 @@ function initialSheetState(): SheetState {
     recipeId: null,
     freeName: '',
     photoId: null,
+    editingId: null,
   };
 }
 
@@ -96,6 +98,7 @@ interface AppState {
   goToNextWeek(): void;
   goToCurrentWeek(): void;
   openSheet(day?: string): void;
+  openEditSheet(id: string): void;
   closeSheet(): void;
   setSheetField<K extends keyof SheetState>(key: K, value: SheetState[K]): void;
   saveLog(): Promise<void>;
@@ -258,6 +261,24 @@ export const useAppStore = create<AppState>()((set, get) => ({
         recipeId: null,
         freeName: '',
         photoId: null,
+        editingId: null,
+      },
+    });
+  },
+
+  openEditSheet(id) {
+    const entry = get().log.find((existing) => existing.id === id);
+    if (!entry) return;
+
+    set({
+      sheet: {
+        open: true,
+        editingId: entry.id,
+        day: entry.date,
+        slot: entry.slot,
+        recipeId: entry.recipeId,
+        freeName: entry.freeName ?? '',
+        photoId: entry.photoId,
       },
     });
   },

@@ -240,3 +240,63 @@ describe('removeLog / undoRemoveLog', () => {
     expect(useAppStore.getState().toast).toMatchObject({ message: "Couldn't delete — try again" });
   });
 });
+
+describe('openEditSheet / openSheet editingId handling', () => {
+  const entry: LogEntry = {
+    id: 'e1', date: '2026-09-09', slot: 'Lunch', recipeId: 'r1', freeName: null, photoId: 'p1', createdAt: 0,
+  };
+
+  beforeEach(() => {
+    useAppStore.setState({ log: [entry] });
+  });
+
+  it('openEditSheet prefills the sheet from the matching log entry and sets editingId', () => {
+    useAppStore.getState().openEditSheet('e1');
+
+    expect(useAppStore.getState().sheet).toMatchObject({
+      open: true,
+      editingId: 'e1',
+      day: '2026-09-09',
+      slot: 'Lunch',
+      recipeId: 'r1',
+      freeName: '',
+      photoId: 'p1',
+    });
+  });
+
+  it('openEditSheet falls back to an empty freeName when the entry has none set', () => {
+    useAppStore.setState({
+      log: [{ ...entry, freeName: null }],
+    });
+
+    useAppStore.getState().openEditSheet('e1');
+
+    expect(useAppStore.getState().sheet.freeName).toBe('');
+  });
+
+  it('openEditSheet prefills freeName for a free-text entry with no recipe', () => {
+    useAppStore.setState({
+      log: [{ ...entry, recipeId: null, freeName: 'Takeout' }],
+    });
+
+    useAppStore.getState().openEditSheet('e1');
+
+    expect(useAppStore.getState().sheet.recipeId).toBeNull();
+    expect(useAppStore.getState().sheet.freeName).toBe('Takeout');
+  });
+
+  it('openEditSheet is a no-op when the id does not match any log entry', () => {
+    const before = useAppStore.getState().sheet;
+    useAppStore.getState().openEditSheet('missing');
+    expect(useAppStore.getState().sheet).toBe(before);
+  });
+
+  it('openSheet resets editingId to null, exiting edit mode', () => {
+    useAppStore.getState().openEditSheet('e1');
+    expect(useAppStore.getState().sheet.editingId).toBe('e1');
+
+    useAppStore.getState().openSheet();
+
+    expect(useAppStore.getState().sheet.editingId).toBeNull();
+  });
+});
