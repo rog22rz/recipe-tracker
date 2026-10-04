@@ -3,6 +3,7 @@ import { addDays, toISODate } from '../lib/dates';
 import {
   compactAgo,
   daysSinceCooked,
+  entryLabel,
   galleryForRecipe,
   historyEntries,
   initialOf,
@@ -273,6 +274,23 @@ describe('galleryForRecipe', () => {
     ];
     const result = galleryForRecipe(log, 'cacio');
     expect(result.map((e) => e.id)).toEqual(['3', '1']);
+  });
+});
+
+describe('entryLabel', () => {
+  it('returns the recipe name when recipeId matches a recipe', () => {
+    const e = entry({ id: '1', date: '2026-09-09', recipeId: 'cacio', slot: 'Dinner' });
+    expect(entryLabel(e, [cacio])).toBe('Cacio e pepe');
+  });
+
+  it('falls back to freeName when there is no matching recipe', () => {
+    const e = entry({ id: '1', date: '2026-09-09', recipeId: null, freeName: 'Takeout', slot: 'Dinner' });
+    expect(entryLabel(e, [cacio])).toBe('Takeout');
+  });
+
+  it('falls back to "Untitled meal" when there is neither a recipe nor a freeName', () => {
+    const e = entry({ id: '1', date: '2026-09-09', recipeId: null, freeName: null, slot: 'Dinner' });
+    expect(entryLabel(e, [cacio])).toBe('Untitled meal');
   });
 });
 

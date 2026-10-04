@@ -4,14 +4,19 @@ import { useAppStore } from '../../store/store';
 import styles from './Toast.module.css';
 
 export function Toast() {
-  const message = useAppStore((state) => state.toast);
+  const toast = useAppStore((state) => state.toast);
   const isDesktop = useIsDesktop();
 
-  if (message === null) return null;
+  if (toast === null) return null;
 
   return (
     <div className={cx(styles.toast, isDesktop && styles.desktop)} role="status" aria-live="polite">
-      {message}
+      <span>{toast.message}</span>
+      {toast.actionLabel && (
+        <button type="button" className={styles.action} onClick={toast.onAction}>
+          {toast.actionLabel}
+        </button>
+      )}
     </div>
   );
 }

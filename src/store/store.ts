@@ -1,9 +1,20 @@
 import { create } from 'zustand';
 import { toISODate } from '../lib/dates';
-import { getAllLogEntries, getAllRecipes, getSettings, putLogEntry, putRecipe, putSettings } from '../lib/db/db';
+import {
+  deleteLogEntry,
+  deletePhoto,
+  getAllLogEntries,
+  getAllRecipes,
+  getSettings,
+  putLogEntry,
+  putRecipe,
+  putSettings,
+} from '../lib/db/db';
+import { entryLabel } from './selectors';
 import type { LogEntry, MealSlot, Recipe, Settings, SortKey, TimeRangeKey } from './types';
 
 const TOAST_LIFETIME_MS = 2200;
+const UNDO_WINDOW_MS = 5000;
 const DOW_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const DEFAULT_SETTINGS: Settings = {
@@ -49,6 +60,12 @@ function initialRecipeSheetState(): RecipeSheetState {
   return { open: false, name: '', ingredientsText: '', notes: '' };
 }
 
+interface ToastState {
+  message: string;
+  actionLabel?: string;
+  onAction?: () => void;
+}
+
 interface AppState {
   recipes: Recipe[];
   log: LogEntry[];
@@ -58,7 +75,7 @@ interface AppState {
   historyRange: TimeRangeKey;
   weekOffset: number;
   sheet: SheetState;
-  toast: string | null;
+  toast: ToastState | null;
   hydrated: boolean;
   hydrateError: string | null;
   settingsOpen: boolean;
@@ -66,8 +83,12 @@ interface AppState {
   recipeSheet: RecipeSheetState;
   savingRecipe: boolean;
 
+  pendingDeletion: LogEntry | null;
+
   hydrate(): Promise<void>;
   addLog(entry: Omit<LogEntry, 'id' | 'createdAt'>): Promise<void>;
+  removeLog(id: string): void;
+  undoRemoveLog(): void;
   setSort(sort: SortKey): void;
   setQuery(query: string): void;
   setHistoryRange(range: TimeRangeKey): void;
@@ -78,7 +99,7 @@ interface AppState {
   closeSheet(): void;
   setSheetField<K extends keyof SheetState>(key: K, value: SheetState[K]): void;
   saveLog(): Promise<void>;
-  showToast(message: string): void;
+  showToast(message: string, options?: { actionLabel?: string; onAction?: () => void; duration?: number }): void;
   updateSettings(partial: Partial<Settings>): Promise<void>;
   openSettings(): void;
   closeSettings(): void;
@@ -91,6 +112,23 @@ interface AppState {
 
 let toastTimeout: ReturnType<typeof setTimeout> | undefined;
 let hydratePromise: Promise<void> | undefined;
+let pendingDeleteTimeout: ReturnType<typeof setTimeout> | undefined;
+
+async function commitPendingDeletion(
+  set: (partial: Partial<AppState> | ((state: AppState) => Partial<AppState>)) => void,
+  get: () => AppState,
+): Promise<void> {
+  const pending = get().pendingDeletion;
+  if (!pending) return;
+  set({ pendingDeletion: null });
+  try {
+    await deleteLogEntry(pending.id);
+    if (pending.photoId) await deletePhoto(pending.photoId);
+  } catch {
+    set((state) => ({ log: [...state.log, pending] }));
+    get().showToast("Couldn't delete — try again");
+  }
+}
 
 export const useAppStore = create<AppState>()((set, get) => ({
   recipes: [],
@@ -108,6 +146,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
   saving: false,
   recipeSheet: initialRecipeSheetState(),
   savingRecipe: false,
+  pendingDeletion: null,
 
   hydrate() {
     if (!hydratePromise) {
@@ -143,6 +182,35 @@ export const useAppStore = create<AppState>()((set, get) => ({
       get().showToast("Couldn't save — try again");
       throw error;
     }
+  },
+
+  removeLog(id) {
+    const entry = get().log.find((existing) => existing.id === id);
+    if (!entry) return;
+
+    if (get().pendingDeletion) {
+      if (pendingDeleteTimeout) clearTimeout(pendingDeleteTimeout);
+      void commitPendingDeletion(set, get);
+    }
+
+    set((state) => ({ log: state.log.filter((existing) => existing.id !== id), pendingDeletion: entry }));
+    pendingDeleteTimeout = setTimeout(() => {
+      void commitPendingDeletion(set, get);
+    }, UNDO_WINDOW_MS);
+
+    get().showToast(`${entryLabel(entry, get().recipes)} removed`, {
+      actionLabel: 'Undo',
+      onAction: () => get().undoRemoveLog(),
+      duration: UNDO_WINDOW_MS,
+    });
+  },
+
+  undoRemoveLog() {
+    const pending = get().pendingDeletion;
+    if (!pending) return;
+
+    if (pendingDeleteTimeout) clearTimeout(pendingDeleteTimeout);
+    set((state) => ({ log: [...state.log, pending], pendingDeletion: null, toast: null }));
   },
 
   async addRecipe(recipe) {
@@ -282,12 +350,12 @@ export const useAppStore = create<AppState>()((set, get) => ({
     set({ recipeSheet: initialRecipeSheetState() });
   },
 
-  showToast(message) {
-    set({ toast: message });
+  showToast(message, options) {
+    set({ toast: { message, actionLabel: options?.actionLabel, onAction: options?.onAction } });
     if (toastTimeout) clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => {
       set({ toast: null });
-    }, TOAST_LIFETIME_MS);
+    }, options?.duration ?? TOAST_LIFETIME_MS);
   },
 
   async updateSettings(partial) {

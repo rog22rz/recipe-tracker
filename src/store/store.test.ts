@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../lib/db/db', () => ({
   getAllRecipes: vi.fn(),
@@ -7,10 +7,13 @@ vi.mock('../lib/db/db', () => ({
   putLogEntry: vi.fn(),
   putSettings: vi.fn(),
   putRecipe: vi.fn(),
+  deleteLogEntry: vi.fn(),
+  deletePhoto: vi.fn(),
 }));
 
-import { getAllLogEntries, getAllRecipes, getSettings, putRecipe } from '../lib/db/db';
+import { deleteLogEntry, deletePhoto, getAllLogEntries, getAllRecipes, getSettings, putRecipe } from '../lib/db/db';
 import { useAppStore } from './store';
+import type { LogEntry } from './types';
 
 describe('hydrate error handling', () => {
   beforeEach(() => {
@@ -87,7 +90,7 @@ describe('addRecipe', () => {
     ).rejects.toThrow('offline');
 
     expect(useAppStore.getState().recipes).toHaveLength(0);
-    expect(useAppStore.getState().toast).toBe("Couldn't save — try again");
+    expect(useAppStore.getState().toast?.message).toBe("Couldn't save — try again");
   });
 });
 
@@ -110,7 +113,7 @@ describe('saveRecipe', () => {
     await useAppStore.getState().saveRecipe();
 
     expect(putRecipe).not.toHaveBeenCalled();
-    expect(useAppStore.getState().toast).toBe('Give it a name');
+    expect(useAppStore.getState().toast?.message).toBe('Give it a name');
   });
 
   it('trims fields, splits ingredients by line, defaults cuisine/minutes/rating, and closes the sheet on success', async () => {
@@ -163,5 +166,77 @@ describe('week navigation', () => {
     useAppStore.setState({ weekOffset: -5 });
     useAppStore.getState().goToCurrentWeek();
     expect(useAppStore.getState().weekOffset).toBe(0);
+  });
+});
+
+describe('removeLog / undoRemoveLog', () => {
+  const entry: LogEntry = {
+    id: 'e1', date: '2026-09-09', slot: 'Dinner', recipeId: null,
+    freeName: 'Takeout', photoId: 'p1', createdAt: Date.now(),
+  };
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    useAppStore.setState({ log: [entry], recipes: [], toast: null, pendingDeletion: null });
+    vi.mocked(deleteLogEntry).mockReset().mockResolvedValue(undefined);
+    vi.mocked(deletePhoto).mockReset().mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('optimistically removes the entry and shows an Undo toast', () => {
+    useAppStore.getState().removeLog('e1');
+
+    expect(useAppStore.getState().log).toHaveLength(0);
+    expect(useAppStore.getState().toast).toMatchObject({ message: 'Takeout removed', actionLabel: 'Undo' });
+    expect(deleteLogEntry).not.toHaveBeenCalled();
+  });
+
+  it('flushes (commits) a previous pending deletion when removeLog is called again before the undo window elapses', async () => {
+    const entry2: LogEntry = { ...entry, id: 'e2', freeName: 'Leftovers' };
+    useAppStore.setState({ log: [entry, entry2] });
+
+    useAppStore.getState().removeLog('e1');
+    useAppStore.getState().removeLog('e2');
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(deleteLogEntry).toHaveBeenCalledWith('e1');
+    expect(deletePhoto).toHaveBeenCalledWith('p1');
+    expect(useAppStore.getState().pendingDeletion).toEqual(entry2);
+    expect(useAppStore.getState().log).toHaveLength(0);
+  });
+
+  it('commits the delete (log entry + photo) once the undo window elapses', async () => {
+    useAppStore.getState().removeLog('e1');
+
+    await vi.runAllTimersAsync();
+
+    expect(deleteLogEntry).toHaveBeenCalledWith('e1');
+    expect(deletePhoto).toHaveBeenCalledWith('p1');
+    expect(useAppStore.getState().pendingDeletion).toBeNull();
+  });
+
+  it('undoRemoveLog restores the entry and cancels the pending delete', async () => {
+    useAppStore.getState().removeLog('e1');
+    useAppStore.getState().undoRemoveLog();
+
+    await vi.runAllTimersAsync();
+
+    expect(useAppStore.getState().log).toEqual([entry]);
+    expect(useAppStore.getState().pendingDeletion).toBeNull();
+    expect(useAppStore.getState().toast).toBeNull();
+    expect(deleteLogEntry).not.toHaveBeenCalled();
+  });
+
+  it('restores the entry and shows a failure toast when the commit fails', async () => {
+    vi.mocked(deleteLogEntry).mockRejectedValue(new Error('offline'));
+    useAppStore.getState().removeLog('e1');
+
+    await vi.advanceTimersByTimeAsync(5000);
+
+    expect(useAppStore.getState().log).toEqual([entry]);
+    expect(useAppStore.getState().toast).toMatchObject({ message: "Couldn't delete — try again" });
   });
 });
