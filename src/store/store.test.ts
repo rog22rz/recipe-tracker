@@ -194,6 +194,20 @@ describe('removeLog / undoRemoveLog', () => {
     expect(deleteLogEntry).not.toHaveBeenCalled();
   });
 
+  it('flushes (commits) a previous pending deletion when removeLog is called again before the undo window elapses', async () => {
+    const entry2: LogEntry = { ...entry, id: 'e2', freeName: 'Leftovers' };
+    useAppStore.setState({ log: [entry, entry2] });
+
+    useAppStore.getState().removeLog('e1');
+    useAppStore.getState().removeLog('e2');
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(deleteLogEntry).toHaveBeenCalledWith('e1');
+    expect(deletePhoto).toHaveBeenCalledWith('p1');
+    expect(useAppStore.getState().pendingDeletion).toEqual(entry2);
+    expect(useAppStore.getState().log).toHaveLength(0);
+  });
+
   it('commits the delete (log entry + photo) once the undo window elapses', async () => {
     useAppStore.getState().removeLog('e1');
 
