@@ -64,9 +64,14 @@ function recipeById(recipes: Recipe[], id: string): Recipe | undefined {
   return recipes.find((recipe) => recipe.id === id);
 }
 
+export function entryLabel(entry: LogEntry, recipes: Recipe[]): string {
+  const recipe = entry.recipeId ? recipeById(recipes, entry.recipeId) : undefined;
+  return recipe ? recipe.name : (entry.freeName ?? 'Untitled meal');
+}
+
 function entryView(entry: LogEntry, recipes: Recipe[]): EntryView {
   const recipe = entry.recipeId ? recipeById(recipes, entry.recipeId) : undefined;
-  const name = recipe ? recipe.name : (entry.freeName ?? 'Untitled meal');
+  const name = entryLabel(entry, recipes);
   return {
     id: entry.id,
     name,
