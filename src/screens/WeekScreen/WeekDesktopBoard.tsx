@@ -32,6 +32,7 @@ export function WeekDesktopBoard({
   onToday,
 }: WeekDesktopBoardProps) {
   const openSheet = useAppStore((state) => state.openSheet);
+  const removeLog = useAppStore((state) => state.removeLog);
   const summary = rotationLine(
     recipes,
     log,
@@ -76,6 +77,7 @@ export function WeekDesktopBoard({
                     recipeId={entry.recipeId}
                     photoId={entry.photoId}
                     orientation="vertical"
+                    onDelete={() => removeLog(entry.id)}
                   />
                 ))}
                 <DashedPlaceholder
