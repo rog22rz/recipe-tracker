@@ -87,7 +87,7 @@ describe('addRecipe', () => {
     ).rejects.toThrow('offline');
 
     expect(useAppStore.getState().recipes).toHaveLength(0);
-    expect(useAppStore.getState().toast).toBe("Couldn't save — try again");
+    expect(useAppStore.getState().toast?.message).toBe("Couldn't save — try again");
   });
 });
 
@@ -110,7 +110,7 @@ describe('saveRecipe', () => {
     await useAppStore.getState().saveRecipe();
 
     expect(putRecipe).not.toHaveBeenCalled();
-    expect(useAppStore.getState().toast).toBe('Give it a name');
+    expect(useAppStore.getState().toast?.message).toBe('Give it a name');
   });
 
   it('trims fields, splits ingredients by line, defaults cuisine/minutes/rating, and closes the sheet on success', async () => {

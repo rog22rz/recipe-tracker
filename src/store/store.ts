@@ -49,6 +49,12 @@ function initialRecipeSheetState(): RecipeSheetState {
   return { open: false, name: '', ingredientsText: '', notes: '' };
 }
 
+interface ToastState {
+  message: string;
+  actionLabel?: string;
+  onAction?: () => void;
+}
+
 interface AppState {
   recipes: Recipe[];
   log: LogEntry[];
@@ -58,7 +64,7 @@ interface AppState {
   historyRange: TimeRangeKey;
   weekOffset: number;
   sheet: SheetState;
-  toast: string | null;
+  toast: ToastState | null;
   hydrated: boolean;
   hydrateError: string | null;
   settingsOpen: boolean;
@@ -78,7 +84,7 @@ interface AppState {
   closeSheet(): void;
   setSheetField<K extends keyof SheetState>(key: K, value: SheetState[K]): void;
   saveLog(): Promise<void>;
-  showToast(message: string): void;
+  showToast(message: string, options?: { actionLabel?: string; onAction?: () => void; duration?: number }): void;
   updateSettings(partial: Partial<Settings>): Promise<void>;
   openSettings(): void;
   closeSettings(): void;
@@ -282,12 +288,12 @@ export const useAppStore = create<AppState>()((set, get) => ({
     set({ recipeSheet: initialRecipeSheetState() });
   },
 
-  showToast(message) {
-    set({ toast: message });
+  showToast(message, options) {
+    set({ toast: { message, actionLabel: options?.actionLabel, onAction: options?.onAction } });
     if (toastTimeout) clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => {
       set({ toast: null });
-    }, TOAST_LIFETIME_MS);
+    }, options?.duration ?? TOAST_LIFETIME_MS);
   },
 
   async updateSettings(partial) {
