@@ -1,6 +1,7 @@
 import { DashedPlaceholder } from '../../components/DashedPlaceholder/DashedPlaceholder';
 import { EntryCard } from '../../components/EntryCard/EntryCard';
 import { SortPills } from '../../components/SortPills/SortPills';
+import { useAppStore } from '../../store/store';
 import type { Settings, TimeRangeKey } from '../../store/types';
 import type { HistoryItem } from './history';
 import { HISTORY_RANGE_OPTIONS } from './history';
@@ -14,6 +15,7 @@ interface HistoryMobileProps {
 }
 
 export function HistoryMobile({ entries, settings, range, setRange }: HistoryMobileProps) {
+  const removeLog = useAppStore((state) => state.removeLog);
   return (
     <div>
       <div className={styles.header}>
@@ -38,6 +40,7 @@ export function HistoryMobile({ entries, settings, range, setRange }: HistoryMob
                 recipeId={entry.recipeId}
                 photoId={entry.photoId}
                 orientation="horizontal"
+                onDelete={() => removeLog(entry.id)}
               />
             </div>
           ))}

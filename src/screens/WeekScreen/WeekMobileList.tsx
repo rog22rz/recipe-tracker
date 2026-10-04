@@ -27,6 +27,7 @@ export function WeekMobileList({
   onToday,
 }: WeekMobileListProps) {
   const openSheet = useAppStore((state) => state.openSheet);
+  const removeLog = useAppStore((state) => state.removeLog);
   const weekCount = rows.reduce((sum, row) => sum + row.entries.length, 0);
 
   return (
@@ -66,6 +67,7 @@ export function WeekMobileList({
                       recipeId={entry.recipeId}
                       photoId={entry.photoId}
                       orientation="horizontal"
+                      onDelete={() => removeLog(entry.id)}
                     />
                   ))}
                   <DashedPlaceholder label="Add another meal" onClick={() => openSheet(row.iso)} />
