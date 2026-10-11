@@ -11,7 +11,15 @@ vi.mock('../lib/db/db', () => ({
   deletePhoto: vi.fn(),
 }));
 
-import { deleteLogEntry, deletePhoto, getAllLogEntries, getAllRecipes, getSettings, putRecipe } from '../lib/db/db';
+import {
+  deleteLogEntry,
+  deletePhoto,
+  getAllLogEntries,
+  getAllRecipes,
+  getSettings,
+  putLogEntry,
+  putRecipe,
+} from '../lib/db/db';
 import { useAppStore } from './store';
 import type { LogEntry } from './types';
 
@@ -238,5 +246,127 @@ describe('removeLog / undoRemoveLog', () => {
 
     expect(useAppStore.getState().log).toEqual([entry]);
     expect(useAppStore.getState().toast).toMatchObject({ message: "Couldn't delete — try again" });
+  });
+});
+
+describe('openEditSheet / openSheet editingId handling', () => {
+  const entry: LogEntry = {
+    id: 'e1', date: '2026-09-09', slot: 'Lunch', recipeId: 'r1', freeName: null, photoId: 'p1', createdAt: 0,
+  };
+
+  beforeEach(() => {
+    useAppStore.setState({ log: [entry] });
+  });
+
+  it('openEditSheet prefills the sheet from the matching log entry and sets editingId', () => {
+    useAppStore.getState().openEditSheet('e1');
+
+    expect(useAppStore.getState().sheet).toMatchObject({
+      open: true,
+      editingId: 'e1',
+      day: '2026-09-09',
+      slot: 'Lunch',
+      recipeId: 'r1',
+      freeName: '',
+      photoId: 'p1',
+    });
+  });
+
+  it('openEditSheet falls back to an empty freeName when the entry has none set', () => {
+    useAppStore.setState({
+      log: [{ ...entry, freeName: null }],
+    });
+
+    useAppStore.getState().openEditSheet('e1');
+
+    expect(useAppStore.getState().sheet.freeName).toBe('');
+  });
+
+  it('openEditSheet prefills freeName for a free-text entry with no recipe', () => {
+    useAppStore.setState({
+      log: [{ ...entry, recipeId: null, freeName: 'Takeout' }],
+    });
+
+    useAppStore.getState().openEditSheet('e1');
+
+    expect(useAppStore.getState().sheet.recipeId).toBeNull();
+    expect(useAppStore.getState().sheet.freeName).toBe('Takeout');
+  });
+
+  it('openEditSheet is a no-op when the id does not match any log entry', () => {
+    const before = useAppStore.getState().sheet;
+    useAppStore.getState().openEditSheet('missing');
+    expect(useAppStore.getState().sheet).toBe(before);
+  });
+
+  it('openSheet resets editingId to null, exiting edit mode', () => {
+    useAppStore.getState().openEditSheet('e1');
+    expect(useAppStore.getState().sheet.editingId).toBe('e1');
+
+    useAppStore.getState().openSheet();
+
+    expect(useAppStore.getState().sheet.editingId).toBeNull();
+  });
+});
+
+describe('saveLog (editing an existing entry)', () => {
+  const existing: LogEntry = {
+    id: 'e1', date: '2026-09-09', slot: 'Dinner', recipeId: null, freeName: 'Takeout', photoId: 'p1', createdAt: 100,
+  };
+
+  beforeEach(() => {
+    useAppStore.setState({
+      log: [existing],
+      recipes: [],
+      toast: null,
+      saving: false,
+      sheet: {
+        open: true, editingId: 'e1', day: '2026-09-09', slot: 'Dinner',
+        recipeId: null, freeName: 'Takeout', photoId: 'p1',
+      },
+    });
+    vi.mocked(putLogEntry).mockReset().mockResolvedValue(undefined);
+    vi.mocked(deletePhoto).mockReset().mockResolvedValue(undefined);
+  });
+
+  it('updates the existing entry in place rather than creating a new one', async () => {
+    useAppStore.setState((state) => ({ sheet: { ...state.sheet, slot: 'Lunch', freeName: 'Brunch' } }));
+
+    await useAppStore.getState().saveLog();
+
+    expect(useAppStore.getState().log).toHaveLength(1);
+    expect(useAppStore.getState().log[0]).toMatchObject({ id: 'e1', slot: 'Lunch', freeName: 'Brunch' });
+    expect(putLogEntry).toHaveBeenCalledWith(expect.objectContaining({ id: 'e1', slot: 'Lunch', freeName: 'Brunch' }));
+  });
+
+  it('deletes the old photo once the save succeeds when the photo is replaced', async () => {
+    useAppStore.setState((state) => ({ sheet: { ...state.sheet, photoId: 'p2' } }));
+
+    await useAppStore.getState().saveLog();
+
+    expect(deletePhoto).toHaveBeenCalledWith('p1');
+  });
+
+  it('does not delete the photo when it is unchanged', async () => {
+    await useAppStore.getState().saveLog();
+    expect(deletePhoto).not.toHaveBeenCalled();
+  });
+
+  it('shows an "updated" toast and closes the sheet, exiting edit mode, on success', async () => {
+    await useAppStore.getState().saveLog();
+
+    expect(useAppStore.getState().toast?.message).toBe('Takeout updated · Wed');
+    expect(useAppStore.getState().sheet.open).toBe(false);
+    expect(useAppStore.getState().sheet.editingId).toBeNull();
+  });
+
+  it('rolls back to the previous entry and shows a toast when persistence fails', async () => {
+    useAppStore.setState((state) => ({ sheet: { ...state.sheet, slot: 'Lunch', freeName: 'Brunch' } }));
+    vi.mocked(putLogEntry).mockRejectedValue(new Error('offline'));
+
+    await useAppStore.getState().saveLog();
+
+    expect(useAppStore.getState().log).toEqual([existing]);
+    expect(useAppStore.getState().toast?.message).toBe("Couldn't save — try again");
   });
 });

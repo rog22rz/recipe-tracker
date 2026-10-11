@@ -36,6 +36,7 @@ interface SheetState {
   recipeId: string | null;
   freeName: string;
   photoId: string | null;
+  editingId: string | null;
 }
 
 function initialSheetState(): SheetState {
@@ -46,6 +47,7 @@ function initialSheetState(): SheetState {
     recipeId: null,
     freeName: '',
     photoId: null,
+    editingId: null,
   };
 }
 
@@ -87,6 +89,7 @@ interface AppState {
 
   hydrate(): Promise<void>;
   addLog(entry: Omit<LogEntry, 'id' | 'createdAt'>): Promise<void>;
+  updateLog(previous: LogEntry, entry: Omit<LogEntry, 'id' | 'createdAt'>): Promise<void>;
   removeLog(id: string): void;
   undoRemoveLog(): void;
   setSort(sort: SortKey): void;
@@ -96,6 +99,7 @@ interface AppState {
   goToNextWeek(): void;
   goToCurrentWeek(): void;
   openSheet(day?: string): void;
+  openEditSheet(id: string): void;
   closeSheet(): void;
   setSheetField<K extends keyof SheetState>(key: K, value: SheetState[K]): void;
   saveLog(): Promise<void>;
@@ -184,6 +188,25 @@ export const useAppStore = create<AppState>()((set, get) => ({
     }
   },
 
+  async updateLog(previous, entry) {
+    const updatedEntry: LogEntry = { ...previous, ...entry };
+    set((state) => ({
+      log: state.log.map((existing) => (existing.id === previous.id ? updatedEntry : existing)),
+    }));
+    try {
+      await putLogEntry(updatedEntry);
+      if (previous.photoId && previous.photoId !== updatedEntry.photoId) {
+        await deletePhoto(previous.photoId);
+      }
+    } catch (error) {
+      set((state) => ({
+        log: state.log.map((existing) => (existing.id === previous.id ? previous : existing)),
+      }));
+      get().showToast("Couldn't save — try again");
+      throw error;
+    }
+  },
+
   removeLog(id) {
     const entry = get().log.find((existing) => existing.id === id);
     if (!entry) return;
@@ -258,6 +281,24 @@ export const useAppStore = create<AppState>()((set, get) => ({
         recipeId: null,
         freeName: '',
         photoId: null,
+        editingId: null,
+      },
+    });
+  },
+
+  openEditSheet(id) {
+    const entry = get().log.find((existing) => existing.id === id);
+    if (!entry) return;
+
+    set({
+      sheet: {
+        open: true,
+        editingId: entry.id,
+        day: entry.date,
+        slot: entry.slot,
+        recipeId: entry.recipeId,
+        freeName: entry.freeName ?? '',
+        photoId: entry.photoId,
       },
     });
   },
@@ -273,7 +314,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
   async saveLog() {
     if (get().saving) return;
 
-    const { sheet, recipes } = get();
+    const { sheet, recipes, log } = get();
     const trimmedName = sheet.freeName.trim();
 
     if (!sheet.recipeId && !trimmedName) {
@@ -283,24 +324,33 @@ export const useAppStore = create<AppState>()((set, get) => ({
 
     const recipe = sheet.recipeId ? recipes.find((r) => r.id === sheet.recipeId) : undefined;
     const label = recipe ? recipe.name : trimmedName;
+    const entryFields = {
+      date: sheet.day,
+      slot: sheet.slot,
+      recipeId: sheet.recipeId,
+      freeName: sheet.recipeId ? null : trimmedName || null,
+      photoId: sheet.photoId,
+    };
 
     set({ saving: true });
     try {
-      await get().addLog({
-        date: sheet.day,
-        slot: sheet.slot,
-        recipeId: sheet.recipeId,
-        freeName: sheet.recipeId ? null : trimmedName || null,
-        photoId: sheet.photoId,
-      });
+      if (sheet.editingId) {
+        const editing = log.find((entry) => entry.id === sheet.editingId);
+        if (!editing) return;
+        await get().updateLog(editing, entryFields);
+      } else {
+        await get().addLog(entryFields);
+      }
     } catch {
       return;
     } finally {
       set({ saving: false });
     }
 
-    get().showToast(`${label} logged · ${dayLabel(sheet.day)}`);
-    set((state) => ({ sheet: { ...state.sheet, open: false, freeName: '', photoId: null } }));
+    get().showToast(`${label} ${sheet.editingId ? 'updated' : 'logged'} · ${dayLabel(sheet.day)}`);
+    set((state) => ({
+      sheet: { ...state.sheet, open: false, editingId: null, freeName: '', photoId: null },
+    }));
   },
 
   openRecipeSheet() {
