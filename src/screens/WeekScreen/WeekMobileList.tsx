@@ -28,6 +28,7 @@ export function WeekMobileList({
 }: WeekMobileListProps) {
   const openSheet = useAppStore((state) => state.openSheet);
   const removeLog = useAppStore((state) => state.removeLog);
+  const openEditSheet = useAppStore((state) => state.openEditSheet);
   const weekCount = rows.reduce((sum, row) => sum + row.entries.length, 0);
 
   return (
@@ -64,9 +65,9 @@ export function WeekMobileList({
                       name={entry.name}
                       slot={entry.slot}
                       showSlot={settings.showMealSlots}
-                      recipeId={entry.recipeId}
                       photoId={entry.photoId}
                       orientation="horizontal"
+                      onEdit={() => openEditSheet(entry.id)}
                       onDelete={() => removeLog(entry.id)}
                     />
                   ))}

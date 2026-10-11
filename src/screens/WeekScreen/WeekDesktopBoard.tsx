@@ -33,6 +33,7 @@ export function WeekDesktopBoard({
 }: WeekDesktopBoardProps) {
   const openSheet = useAppStore((state) => state.openSheet);
   const removeLog = useAppStore((state) => state.removeLog);
+  const openEditSheet = useAppStore((state) => state.openEditSheet);
   const summary = rotationLine(
     recipes,
     log,
@@ -74,9 +75,9 @@ export function WeekDesktopBoard({
                     name={entry.name}
                     slot={entry.slot}
                     showSlot={settings.showMealSlots}
-                    recipeId={entry.recipeId}
                     photoId={entry.photoId}
                     orientation="vertical"
+                    onEdit={() => openEditSheet(entry.id)}
                     onDelete={() => removeLog(entry.id)}
                   />
                 ))}

@@ -16,6 +16,7 @@ interface HistoryDesktopProps {
 
 export function HistoryDesktop({ entries, settings, range, setRange }: HistoryDesktopProps) {
   const removeLog = useAppStore((state) => state.removeLog);
+  const openEditSheet = useAppStore((state) => state.openEditSheet);
   return (
     <div>
       <div className={styles.header}>
@@ -35,9 +36,9 @@ export function HistoryDesktop({ entries, settings, range, setRange }: HistoryDe
                 name={entry.name}
                 slot={entry.slot}
                 showSlot={settings.showMealSlots}
-                recipeId={entry.recipeId}
                 photoId={entry.photoId}
                 orientation="horizontal"
+                onEdit={() => openEditSheet(entry.id)}
                 onDelete={() => removeLog(entry.id)}
               />
             </div>
