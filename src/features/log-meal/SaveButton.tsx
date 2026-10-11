@@ -9,11 +9,16 @@ export function SaveButton({ className }: SaveButtonProps) {
   const day = useAppStore((state) => state.sheet.day);
   const recipeId = useAppStore((state) => state.sheet.recipeId);
   const freeName = useAppStore((state) => state.sheet.freeName);
+  const editingId = useAppStore((state) => state.sheet.editingId);
   const saving = useAppStore((state) => state.saving);
   const saveLog = useAppStore((state) => state.saveLog);
 
   const canSave = recipeId !== null || freeName.trim().length > 0;
-  const label = canSave ? `Save to ${dayLabel(day)}` : 'Name it or pick a recipe';
+  const label = canSave
+    ? editingId
+      ? 'Save changes'
+      : `Save to ${dayLabel(day)}`
+    : 'Name it or pick a recipe';
 
   return (
     <button

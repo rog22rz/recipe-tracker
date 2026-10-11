@@ -13,6 +13,7 @@ export function LogMealSheetMobile() {
   const closeSheet = useAppStore((state) => state.closeSheet);
   const photoId = useAppStore((state) => state.sheet.photoId);
   const setSheetField = useAppStore((state) => state.setSheetField);
+  const editingId = useAppStore((state) => state.sheet.editingId);
   const showToast = useAppStore((state) => state.showToast);
   const containerRef = useFocusTrap<HTMLDivElement>(closeSheet);
 
@@ -34,11 +35,11 @@ export function LogMealSheetMobile() {
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
-        aria-label="Log a meal"
+        aria-label={editingId ? 'Edit meal' : 'Log a meal'}
       >
         <div className={styles.handle} />
         <div className={styles.header}>
-          <h2 className={styles.title}>Log a meal</h2>
+          <h2 className={styles.title}>{editingId ? 'Edit meal' : 'Log a meal'}</h2>
           <button type="button" className={styles.cancel} onClick={closeSheet}>
             Cancel
           </button>
