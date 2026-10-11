@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { cx } from '../../lib/cx';
 import type { MealSlot } from '../../store/types';
 import { PhotoThumb } from '../PhotoThumb/PhotoThumb';
@@ -8,14 +7,13 @@ interface EntryCardProps {
   name: string;
   slot: MealSlot;
   showSlot: boolean;
-  recipeId: string | null;
   photoId: string | null;
   orientation: 'horizontal' | 'vertical';
+  onEdit: () => void;
   onDelete?: () => void;
 }
 
-export function EntryCard({ name, slot, showSlot, recipeId, photoId, orientation, onDelete }: EntryCardProps) {
-  const navigate = useNavigate();
+export function EntryCard({ name, slot, showSlot, photoId, orientation, onEdit, onDelete }: EntryCardProps) {
   const isVertical = orientation === 'vertical';
 
   return (
@@ -23,9 +21,7 @@ export function EntryCard({ name, slot, showSlot, recipeId, photoId, orientation
       <button
         type="button"
         className={cx(styles.contentButton, isVertical && styles.vertical)}
-        onClick={() => {
-          if (recipeId) navigate(`/recipes/${recipeId}`);
-        }}
+        onClick={onEdit}
       >
         {isVertical ? (
           <div className={styles.tileWrap}>
