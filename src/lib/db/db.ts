@@ -1,12 +1,6 @@
 import { supabase } from '../supabase/client';
 import type { LogEntry, Recipe, Settings } from '../../store/types';
 
-export interface PhotoRow {
-  id: string;
-  blob: Blob;
-  createdAt: number;
-}
-
 export async function getAllRecipes(): Promise<Recipe[]> {
   const { data, error } = await supabase
     .from('recipes')
@@ -34,7 +28,6 @@ interface LogEntryRow {
   slot: LogEntry['slot'];
   recipe_id: string | null;
   free_name: string | null;
-  photo_id: string | null;
   created_at: string;
 }
 
@@ -52,7 +45,7 @@ function toLogEntry(row: LogEntryRow): LogEntry {
 export async function getAllLogEntries(): Promise<LogEntry[]> {
   const { data, error } = await supabase
     .from('log_entries')
-    .select('id, date, slot, recipe_id, free_name, photo_id, created_at');
+    .select('id, date, slot, recipe_id, free_name, created_at');
   if (error) throw error;
   return (data ?? []).map(toLogEntry);
 }
@@ -99,52 +92,5 @@ export async function putSettings(settings: Settings): Promise<void> {
     },
     { onConflict: 'owner_id' },
   );
-  if (error) throw error;
-}
-
-async function getOwnerId(): Promise<string> {
-  const { data, error } = await supabase.auth.getSession();
-  if (error || !data.session) throw error ?? new Error('Not authenticated');
-  return data.session.user.id;
-}
-
-export async function getPhoto(id: string): Promise<PhotoRow | undefined> {
-  const ownerId = await getOwnerId();
-  const { data: row, error } = await supabase
-    .from('photos')
-    .select('id, created_at')
-    .eq('id', id)
-    .maybeSingle();
-  if (error) throw error;
-  if (!row) return undefined;
-
-  const { data: blob, error: downloadError } = await supabase.storage
-    .from('photos')
-    .download(`${ownerId}/${id}`);
-  if (downloadError) throw downloadError;
-
-  return { id: row.id, blob, createdAt: new Date(row.created_at).getTime() };
-}
-
-export async function putPhoto(photo: PhotoRow): Promise<void> {
-  const ownerId = await getOwnerId();
-  const { error: uploadError } = await supabase.storage
-    .from('photos')
-    .upload(`${ownerId}/${photo.id}`, photo.blob, { upsert: true });
-  if (uploadError) throw uploadError;
-
-  const { error } = await supabase.from('photos').upsert({
-    id: photo.id,
-    created_at: new Date(photo.createdAt).toISOString(),
-  });
-  if (error) throw error;
-}
-
-export async function deletePhoto(id: string): Promise<void> {
-  const ownerId = await getOwnerId();
-  const { error: storageError } = await supabase.storage.from('photos').remove([`${ownerId}/${id}`]);
-  if (storageError) throw storageError;
-
-  const { error } = await supabase.from('photos').delete().eq('id', id);
   if (error) throw error;
 }
