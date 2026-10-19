@@ -42,7 +42,6 @@ export function LibraryDesktop({ items, query, setQuery, sort, setSort }: Librar
               id={item.id}
               name={item.name}
               metaLine={item.metaLine}
-              photoId={item.photoId}
               size="desktop"
             />
           ))}

@@ -65,7 +65,6 @@ export function WeekMobileList({
                       name={entry.name}
                       slot={entry.slot}
                       showSlot={settings.showMealSlots}
-                      photoId={entry.photoId}
                       orientation="horizontal"
                       onEdit={() => openEditSheet(entry.id)}
                       onDelete={() => removeLog(entry.id)}

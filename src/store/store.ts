@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { toISODate } from '../lib/dates';
 import {
   deleteLogEntry,
-  deletePhoto,
   getAllLogEntries,
   getAllRecipes,
   getSettings,
@@ -35,7 +34,6 @@ interface SheetState {
   slot: MealSlot;
   recipeId: string | null;
   freeName: string;
-  photoId: string | null;
   editingId: string | null;
 }
 
@@ -46,7 +44,6 @@ function initialSheetState(): SheetState {
     slot: 'Dinner',
     recipeId: null,
     freeName: '',
-    photoId: null,
     editingId: null,
   };
 }
@@ -127,7 +124,6 @@ async function commitPendingDeletion(
   set({ pendingDeletion: null });
   try {
     await deleteLogEntry(pending.id);
-    if (pending.photoId) await deletePhoto(pending.photoId);
   } catch {
     set((state) => ({ log: [...state.log, pending] }));
     get().showToast("Couldn't delete — try again");
@@ -195,9 +191,6 @@ export const useAppStore = create<AppState>()((set, get) => ({
     }));
     try {
       await putLogEntry(updatedEntry);
-      if (previous.photoId && previous.photoId !== updatedEntry.photoId) {
-        await deletePhoto(previous.photoId);
-      }
     } catch (error) {
       set((state) => ({
         log: state.log.map((existing) => (existing.id === previous.id ? previous : existing)),
@@ -280,7 +273,6 @@ export const useAppStore = create<AppState>()((set, get) => ({
         slot: 'Dinner',
         recipeId: null,
         freeName: '',
-        photoId: null,
         editingId: null,
       },
     });
@@ -298,7 +290,6 @@ export const useAppStore = create<AppState>()((set, get) => ({
         slot: entry.slot,
         recipeId: entry.recipeId,
         freeName: entry.freeName ?? '',
-        photoId: entry.photoId,
       },
     });
   },
@@ -329,7 +320,6 @@ export const useAppStore = create<AppState>()((set, get) => ({
       slot: sheet.slot,
       recipeId: sheet.recipeId,
       freeName: sheet.recipeId ? null : trimmedName || null,
-      photoId: sheet.photoId,
     };
 
     set({ saving: true });
@@ -349,7 +339,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
 
     get().showToast(`${label} ${sheet.editingId ? 'updated' : 'logged'} · ${dayLabel(sheet.day)}`);
     set((state) => ({
-      sheet: { ...state.sheet, open: false, editingId: null, freeName: '', photoId: null },
+      sheet: { ...state.sheet, open: false, editingId: null, freeName: '' },
     }));
   },
 

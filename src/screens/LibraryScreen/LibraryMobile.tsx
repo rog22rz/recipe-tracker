@@ -42,7 +42,6 @@ export function LibraryMobile({ items, query, setQuery, sort, setSort }: Library
               id={item.id}
               name={item.name}
               metaLine={item.metaLine}
-              photoId={item.photoId}
               size="mobile"
             />
           ))}

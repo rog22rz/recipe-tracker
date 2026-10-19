@@ -1,19 +1,18 @@
 import { cx } from '../../lib/cx';
+import { InitialTile } from '../InitialTile/InitialTile';
 import type { MealSlot } from '../../store/types';
-import { PhotoThumb } from '../PhotoThumb/PhotoThumb';
 import styles from './EntryCard.module.css';
 
 interface EntryCardProps {
   name: string;
   slot: MealSlot;
   showSlot: boolean;
-  photoId: string | null;
   orientation: 'horizontal' | 'vertical';
   onEdit: () => void;
   onDelete?: () => void;
 }
 
-export function EntryCard({ name, slot, showSlot, photoId, orientation, onEdit, onDelete }: EntryCardProps) {
+export function EntryCard({ name, slot, showSlot, orientation, onEdit, onDelete }: EntryCardProps) {
   const isVertical = orientation === 'vertical';
 
   return (
@@ -25,10 +24,10 @@ export function EntryCard({ name, slot, showSlot, photoId, orientation, onEdit, 
       >
         {isVertical ? (
           <div className={styles.tileWrap}>
-            <PhotoThumb photoId={photoId} name={name} size={96} />
+            <InitialTile name={name} size={96} />
           </div>
         ) : (
-          <PhotoThumb photoId={photoId} name={name} size={56} />
+          <InitialTile name={name} size={56} />
         )}
         <div className={cx(styles.text, isVertical && styles.vertical)}>
           <div className={cx(styles.name, isVertical && styles.vertical)}>{name}</div>

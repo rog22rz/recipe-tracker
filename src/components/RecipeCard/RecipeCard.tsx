@@ -1,17 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import { cx } from '../../lib/cx';
-import { PhotoThumb } from '../PhotoThumb/PhotoThumb';
+import { InitialTile } from '../InitialTile/InitialTile';
 import styles from './RecipeCard.module.css';
 
 interface RecipeCardProps {
   id: string;
   name: string;
   metaLine: string;
-  photoId: string | null | undefined;
   size: 'mobile' | 'desktop';
 }
 
-export function RecipeCard({ id, name, metaLine, photoId, size }: RecipeCardProps) {
+export function RecipeCard({ id, name, metaLine, size }: RecipeCardProps) {
   const navigate = useNavigate();
 
   return (
@@ -21,7 +20,7 @@ export function RecipeCard({ id, name, metaLine, photoId, size }: RecipeCardProp
       onClick={() => navigate(`/recipes/${id}`)}
     >
       <div className={styles.photo}>
-        <PhotoThumb photoId={photoId} name={name} size={96} />
+        <InitialTile name={name} size={96} />
       </div>
       <div className={styles.name}>{name}</div>
       <div className={styles.meta}>{metaLine}</div>

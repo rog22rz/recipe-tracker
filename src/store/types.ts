@@ -18,7 +18,6 @@ export interface LogEntry {
   slot: MealSlot;
   recipeId: string | null;
   freeName: string | null;
-  photoId: string | null;
   createdAt: number;
 }
 

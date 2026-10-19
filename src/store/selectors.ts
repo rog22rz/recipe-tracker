@@ -8,7 +8,6 @@ export interface EntryView {
   slot: MealSlot;
   recipeId: string | null;
   isRecipe: boolean;
-  photoId: string | null;
 }
 
 export interface DayRow {
@@ -79,7 +78,6 @@ function entryView(entry: LogEntry, recipes: Recipe[]): EntryView {
     slot: entry.slot,
     recipeId: entry.recipeId,
     isRecipe: recipe !== undefined,
-    photoId: entry.photoId,
   };
 }
 
@@ -246,10 +244,4 @@ export function rotationLine(
   const staleCount = stale(recipes, log, staleAfterDays, today).length;
 
   return `${weekEntries.length} meals logged this week across ${recipeIds.size} recipes. ${staleCount} haven't come round in a while.`;
-}
-
-export function galleryForRecipe(log: LogEntry[], recipeId: string): LogEntry[] {
-  return log
-    .filter((entry) => entry.recipeId === recipeId && entry.photoId !== null)
-    .sort((a, b) => b.createdAt - a.createdAt);
 }

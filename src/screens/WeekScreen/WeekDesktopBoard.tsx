@@ -75,7 +75,6 @@ export function WeekDesktopBoard({
                     name={entry.name}
                     slot={entry.slot}
                     showSlot={settings.showMealSlots}
-                    photoId={entry.photoId}
                     orientation="vertical"
                     onEdit={() => openEditSheet(entry.id)}
                     onDelete={() => removeLog(entry.id)}

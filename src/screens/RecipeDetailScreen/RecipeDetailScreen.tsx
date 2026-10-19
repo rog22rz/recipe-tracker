@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import type { StatCell } from '../../components/StatTrio/StatTrio';
 import { toISODate } from '../../lib/dates';
 import { useIsDesktop } from '../../lib/hooks/useIsDesktop';
-import { compactAgo, daysSinceCooked, galleryForRecipe, timesCooked } from '../../store/selectors';
+import { compactAgo, daysSinceCooked, timesCooked } from '../../store/selectors';
 import { dayLabel, useAppStore } from '../../store/store';
 import { RecipeDetailDesktop } from './RecipeDetailDesktop';
 import { RecipeDetailMobile } from './RecipeDetailMobile';
@@ -24,7 +24,6 @@ export function RecipeDetailScreen() {
   const today = new Date();
   const times = timesCooked(log, recipe.id);
   const daysSinceLastCooked = daysSinceCooked(log, recipe.id, today);
-  const gallery = galleryForRecipe(log, recipe.id).slice(0, 3);
 
   const statCells: StatCell[] = [
     { value: String(times), label: 'times' },
@@ -40,7 +39,6 @@ export function RecipeDetailScreen() {
         slot: 'Dinner',
         recipeId: recipe.id,
         freeName: null,
-        photoId: null,
       });
     } catch {
       return;
@@ -49,20 +47,8 @@ export function RecipeDetailScreen() {
   };
 
   return isDesktop ? (
-    <RecipeDetailDesktop
-      recipe={recipe}
-      statCells={statCells}
-      gallery={gallery}
-      today={today}
-      onLogNow={handleLogNow}
-    />
+    <RecipeDetailDesktop recipe={recipe} statCells={statCells} onLogNow={handleLogNow} />
   ) : (
-    <RecipeDetailMobile
-      recipe={recipe}
-      statCells={statCells}
-      gallery={gallery}
-      today={today}
-      onLogNow={handleLogNow}
-    />
+    <RecipeDetailMobile recipe={recipe} statCells={statCells} onLogNow={handleLogNow} />
   );
 }

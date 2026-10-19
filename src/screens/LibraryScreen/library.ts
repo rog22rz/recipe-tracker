@@ -5,7 +5,6 @@ export interface LibraryItem {
   id: string;
   name: string;
   metaLine: string;
-  photoId: string | null | undefined;
 }
 
 export const LIBRARY_SORT_OPTIONS: SortPillOption<SortKey>[] = [
