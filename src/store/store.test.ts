@@ -8,12 +8,10 @@ vi.mock('../lib/db/db', () => ({
   putSettings: vi.fn(),
   putRecipe: vi.fn(),
   deleteLogEntry: vi.fn(),
-  deletePhoto: vi.fn(),
 }));
 
 import {
   deleteLogEntry,
-  deletePhoto,
   getAllLogEntries,
   getAllRecipes,
   getSettings,
@@ -180,14 +178,13 @@ describe('week navigation', () => {
 describe('removeLog / undoRemoveLog', () => {
   const entry: LogEntry = {
     id: 'e1', date: '2026-09-09', slot: 'Dinner', recipeId: null,
-    freeName: 'Takeout', photoId: 'p1', createdAt: Date.now(),
+    freeName: 'Takeout', createdAt: Date.now(),
   };
 
   beforeEach(() => {
     vi.useFakeTimers();
     useAppStore.setState({ log: [entry], recipes: [], toast: null, pendingDeletion: null });
     vi.mocked(deleteLogEntry).mockReset().mockResolvedValue(undefined);
-    vi.mocked(deletePhoto).mockReset().mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -211,18 +208,16 @@ describe('removeLog / undoRemoveLog', () => {
     await vi.advanceTimersByTimeAsync(0);
 
     expect(deleteLogEntry).toHaveBeenCalledWith('e1');
-    expect(deletePhoto).toHaveBeenCalledWith('p1');
     expect(useAppStore.getState().pendingDeletion).toEqual(entry2);
     expect(useAppStore.getState().log).toHaveLength(0);
   });
 
-  it('commits the delete (log entry + photo) once the undo window elapses', async () => {
+  it('commits the delete once the undo window elapses', async () => {
     useAppStore.getState().removeLog('e1');
 
     await vi.runAllTimersAsync();
 
     expect(deleteLogEntry).toHaveBeenCalledWith('e1');
-    expect(deletePhoto).toHaveBeenCalledWith('p1');
     expect(useAppStore.getState().pendingDeletion).toBeNull();
   });
 
@@ -251,7 +246,7 @@ describe('removeLog / undoRemoveLog', () => {
 
 describe('openEditSheet / openSheet editingId handling', () => {
   const entry: LogEntry = {
-    id: 'e1', date: '2026-09-09', slot: 'Lunch', recipeId: 'r1', freeName: null, photoId: 'p1', createdAt: 0,
+    id: 'e1', date: '2026-09-09', slot: 'Lunch', recipeId: 'r1', freeName: null, createdAt: 0,
   };
 
   beforeEach(() => {
@@ -268,7 +263,6 @@ describe('openEditSheet / openSheet editingId handling', () => {
       slot: 'Lunch',
       recipeId: 'r1',
       freeName: '',
-      photoId: 'p1',
     });
   });
 
@@ -311,7 +305,7 @@ describe('openEditSheet / openSheet editingId handling', () => {
 
 describe('saveLog (editing an existing entry)', () => {
   const existing: LogEntry = {
-    id: 'e1', date: '2026-09-09', slot: 'Dinner', recipeId: null, freeName: 'Takeout', photoId: 'p1', createdAt: 100,
+    id: 'e1', date: '2026-09-09', slot: 'Dinner', recipeId: null, freeName: 'Takeout', createdAt: 100,
   };
 
   beforeEach(() => {
@@ -322,11 +316,10 @@ describe('saveLog (editing an existing entry)', () => {
       saving: false,
       sheet: {
         open: true, editingId: 'e1', day: '2026-09-09', slot: 'Dinner',
-        recipeId: null, freeName: 'Takeout', photoId: 'p1',
+        recipeId: null, freeName: 'Takeout',
       },
     });
     vi.mocked(putLogEntry).mockReset().mockResolvedValue(undefined);
-    vi.mocked(deletePhoto).mockReset().mockResolvedValue(undefined);
   });
 
   it('updates the existing entry in place rather than creating a new one', async () => {
@@ -337,19 +330,6 @@ describe('saveLog (editing an existing entry)', () => {
     expect(useAppStore.getState().log).toHaveLength(1);
     expect(useAppStore.getState().log[0]).toMatchObject({ id: 'e1', slot: 'Lunch', freeName: 'Brunch' });
     expect(putLogEntry).toHaveBeenCalledWith(expect.objectContaining({ id: 'e1', slot: 'Lunch', freeName: 'Brunch' }));
-  });
-
-  it('deletes the old photo once the save succeeds when the photo is replaced', async () => {
-    useAppStore.setState((state) => ({ sheet: { ...state.sheet, photoId: 'p2' } }));
-
-    await useAppStore.getState().saveLog();
-
-    expect(deletePhoto).toHaveBeenCalledWith('p1');
-  });
-
-  it('does not delete the photo when it is unchanged', async () => {
-    await useAppStore.getState().saveLog();
-    expect(deletePhoto).not.toHaveBeenCalled();
   });
 
   it('shows an "updated" toast and closes the sheet, exiting edit mode, on success', async () => {

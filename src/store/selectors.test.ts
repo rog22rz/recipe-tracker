@@ -4,7 +4,6 @@ import {
   compactAgo,
   daysSinceCooked,
   entryLabel,
-  galleryForRecipe,
   historyEntries,
   initialOf,
   lastCookedAt,
@@ -43,7 +42,6 @@ function entry(overrides: Partial<LogEntry> & { id: string; date: string }): Log
     slot: 'Dinner',
     recipeId: null,
     freeName: null,
-    photoId: null,
     createdAt: 0,
     ...overrides,
   };
@@ -262,18 +260,6 @@ describe('rotationLine', () => {
     ];
     const line = rotationLine([cacio, chicken, squash], log, weekDates, 14, referenceToday);
     expect(line).toBe("2 meals logged this week across 2 recipes. 1 haven't come round in a while.");
-  });
-});
-
-describe('galleryForRecipe', () => {
-  it('returns only entries with a photo, newest first', () => {
-    const log: LogEntry[] = [
-      entry({ id: '1', date: '2026-09-01', recipeId: 'cacio', photoId: 'p1', createdAt: 1 }),
-      entry({ id: '2', date: '2026-09-02', recipeId: 'cacio', photoId: null, createdAt: 2 }),
-      entry({ id: '3', date: '2026-09-03', recipeId: 'cacio', photoId: 'p3', createdAt: 3 }),
-    ];
-    const result = galleryForRecipe(log, 'cacio');
-    expect(result.map((e) => e.id)).toEqual(['3', '1']);
   });
 });
 

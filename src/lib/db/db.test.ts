@@ -12,41 +12,26 @@ function makeQueryBuilder(result: { data: unknown; error: unknown }) {
   return builder;
 }
 
-const { from, storageUpload, storageDownload, storageRemove, getSession } = vi.hoisted(() => ({
+const { from } = vi.hoisted(() => ({
   from: vi.fn(),
-  storageUpload: vi.fn(),
-  storageDownload: vi.fn(),
-  storageRemove: vi.fn(),
-  getSession: vi.fn(),
 }));
 
 vi.mock('../supabase/client', () => ({
-  supabase: {
-    from,
-    storage: { from: () => ({ upload: storageUpload, download: storageDownload, remove: storageRemove }) },
-    auth: { getSession },
-  },
+  supabase: { from },
 }));
 
 import {
   deleteLogEntry,
-  deletePhoto,
   getAllLogEntries,
   getAllRecipes,
-  getPhoto,
   getSettings,
   putLogEntry,
-  putPhoto,
   putRecipe,
 } from './db';
 
 describe('db (Supabase-backed)', () => {
   beforeEach(() => {
     from.mockReset();
-    storageUpload.mockReset();
-    storageDownload.mockReset();
-    storageRemove.mockReset();
-    getSession.mockReset();
   });
 
   it('getAllRecipes maps rows to Recipe[]', async () => {
@@ -69,7 +54,7 @@ describe('db (Supabase-backed)', () => {
   it('getAllLogEntries maps snake_case rows to camelCase LogEntry[]', async () => {
     const row = {
       id: '1', date: '2026-09-09', slot: 'Dinner', recipe_id: 'r1',
-      free_name: null, photo_id: null, created_at: '2026-09-09T00:00:00.000Z',
+      free_name: null, created_at: '2026-09-09T00:00:00.000Z',
     };
     from.mockReturnValue(makeQueryBuilder({ data: [row], error: null }));
 
@@ -77,7 +62,7 @@ describe('db (Supabase-backed)', () => {
 
     expect(entries).toEqual<LogEntry[]>([{
       id: '1', date: '2026-09-09', slot: 'Dinner', recipeId: 'r1',
-      freeName: null, photoId: null, createdAt: new Date(row.created_at).getTime(),
+      freeName: null, createdAt: new Date(row.created_at).getTime(),
     }]);
   });
 
@@ -85,7 +70,7 @@ describe('db (Supabase-backed)', () => {
     from.mockReturnValue(makeQueryBuilder({ data: null, error: null }));
     const entry: LogEntry = {
       id: '1', date: '2026-09-09', slot: 'Dinner', recipeId: null,
-      freeName: 'Takeout', photoId: null, createdAt: Date.now(),
+      freeName: 'Takeout', createdAt: Date.now(),
     };
 
     await expect(putLogEntry(entry)).resolves.toBeUndefined();
@@ -106,29 +91,6 @@ describe('db (Supabase-backed)', () => {
     await expect(getSettings()).resolves.toEqual(expected);
   });
 
-  it('putPhoto uploads the blob then upserts photo metadata', async () => {
-    getSession.mockResolvedValue({ data: { session: { user: { id: 'owner-1' } } }, error: null });
-    storageUpload.mockResolvedValue({ error: null });
-    from.mockReturnValue(makeQueryBuilder({ data: null, error: null }));
-    const blob = new Blob(['x']);
-
-    await putPhoto({ id: 'p1', blob, createdAt: Date.now() });
-
-    expect(storageUpload).toHaveBeenCalledWith('owner-1/p1', blob, { upsert: true });
-  });
-
-  it('getPhoto downloads the blob and returns a PhotoRow', async () => {
-    getSession.mockResolvedValue({ data: { session: { user: { id: 'owner-1' } } }, error: null });
-    from.mockReturnValue(makeQueryBuilder({ data: { id: 'p1', created_at: '2026-09-09T00:00:00.000Z' }, error: null }));
-    const blob = new Blob(['x']);
-    storageDownload.mockResolvedValue({ data: blob, error: null });
-
-    const photo = await getPhoto('p1');
-
-    expect(storageDownload).toHaveBeenCalledWith('owner-1/p1');
-    expect(photo).toEqual({ id: 'p1', blob, createdAt: new Date('2026-09-09T00:00:00.000Z').getTime() });
-  });
-
   it('deleteLogEntry deletes by id without throwing on success', async () => {
     from.mockReturnValue(makeQueryBuilder({ data: null, error: null }));
 
@@ -140,22 +102,5 @@ describe('db (Supabase-backed)', () => {
     from.mockReturnValue(makeQueryBuilder({ data: null, error: new Error('network down') }));
 
     await expect(deleteLogEntry('1')).rejects.toThrow('network down');
-  });
-
-  it('deletePhoto removes the storage object then deletes the photos row', async () => {
-    getSession.mockResolvedValue({ data: { session: { user: { id: 'owner-1' } } }, error: null });
-    storageRemove.mockResolvedValue({ error: null });
-    from.mockReturnValue(makeQueryBuilder({ data: null, error: null }));
-
-    await expect(deletePhoto('p1')).resolves.toBeUndefined();
-    expect(storageRemove).toHaveBeenCalledWith(['owner-1/p1']);
-    expect(from).toHaveBeenCalledWith('photos');
-  });
-
-  it('deletePhoto throws when the storage removal fails', async () => {
-    getSession.mockResolvedValue({ data: { session: { user: { id: 'owner-1' } } }, error: null });
-    storageRemove.mockResolvedValue({ error: new Error('storage down') });
-
-    await expect(deletePhoto('p1')).rejects.toThrow('storage down');
   });
 });
