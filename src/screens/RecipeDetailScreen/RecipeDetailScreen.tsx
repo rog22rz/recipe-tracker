@@ -39,7 +39,6 @@ export function RecipeDetailScreen() {
         slot: 'Dinner',
         recipeId: recipe.id,
         freeName: null,
-        photoId: null,
       });
     } catch {
       return;

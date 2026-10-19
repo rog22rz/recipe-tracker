@@ -22,7 +22,6 @@ export function HistoryScreen() {
       name: entry.name,
       slot: entry.slot,
       recipeId: entry.recipeId,
-      photoId: entry.photoId,
       ago: relativeAgo(daysSince(entry.date, today)),
     }),
   );

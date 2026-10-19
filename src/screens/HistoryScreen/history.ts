@@ -6,7 +6,6 @@ export interface HistoryItem {
   name: string;
   slot: MealSlot;
   recipeId: string | null;
-  photoId: string | null;
   ago: string;
 }
 

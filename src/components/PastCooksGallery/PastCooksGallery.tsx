@@ -25,7 +25,7 @@ export function PastCooksGallery({
       {entries.map((entry) => (
         <div key={entry.id}>
           <div className={styles.photo}>
-            <PhotoThumb photoId={entry.photoId} name={fallbackName} size={120} />
+            <PhotoThumb photoId={undefined} name={fallbackName} size={120} />
           </div>
           <div className={styles.caption}>{relativeAgo(daysSince(entry.date, today))}</div>
         </div>

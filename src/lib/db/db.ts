@@ -45,7 +45,6 @@ function toLogEntry(row: LogEntryRow): LogEntry {
     slot: row.slot,
     recipeId: row.recipe_id,
     freeName: row.free_name,
-    photoId: row.photo_id,
     createdAt: new Date(row.created_at).getTime(),
   };
 }
@@ -65,7 +64,6 @@ export async function putLogEntry(entry: LogEntry): Promise<void> {
     slot: entry.slot,
     recipe_id: entry.recipeId,
     free_name: entry.freeName,
-    photo_id: entry.photoId,
     created_at: new Date(entry.createdAt).toISOString(),
   });
   if (error) throw error;
