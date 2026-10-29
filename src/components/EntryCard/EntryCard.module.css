@@ -65,7 +65,7 @@
 
 .text.vertical {
   flex: none;
-  margin-top: 8px;
+  margin-top: 0;
 }
 
 .name {
@@ -103,21 +103,4 @@
   padding-right: 6px;
   font-size: 20px;
   color: var(--color-chevron);
-}
-
-.tileWrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: var(--radius-tile-min);
-  overflow: hidden;
-}
-
-.tileWrap > div {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  border-radius: 0 !important;
-  font-size: 26px !important;
 }

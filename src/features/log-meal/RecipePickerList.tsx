@@ -1,4 +1,3 @@
-import { InitialTile } from '../../components/InitialTile/InitialTile';
 import { cx } from '../../lib/cx';
 import { daysSince } from '../../lib/dates';
 import { recentFirst, relativeAgo } from '../../store/selectors';
@@ -17,7 +16,6 @@ export function RecipePickerList({ variant }: RecipePickerListProps) {
 
   const rows = recentFirst(recipes, log);
   const today = new Date();
-  const tileSize = variant === 'desktop' ? 40 : 44;
 
   return (
     <div className={cx(styles.list, variant === 'desktop' && styles.desktop)}>
@@ -39,7 +37,6 @@ export function RecipePickerList({ variant }: RecipePickerListProps) {
             )}
             onClick={() => setSheetField('recipeId', selected ? null : recipe.id)}
           >
-            <InitialTile name={recipe.name} size={tileSize} />
             <span className={styles.text}>
               <span className={cx(styles.name, variant === 'desktop' && styles.desktop)}>
                 {recipe.name}
