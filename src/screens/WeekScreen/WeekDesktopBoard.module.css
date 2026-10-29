@@ -13,11 +13,14 @@
 }
 
 .eyebrow {
+  display: inline-block;
+  min-width: 27ch;
   font-size: 11.5px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-eyebrow);
   color: var(--color-label);
+  white-space: nowrap;
 }
 
 .title {
