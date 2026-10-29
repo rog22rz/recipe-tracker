@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { InitialTile } from '../../components/InitialTile/InitialTile';
 import { cx } from '../../lib/cx';
 import { relativeAgo } from '../../store/selectors';
 import styles from './GatheringDustList.module.css';
@@ -27,7 +26,6 @@ export function GatheringDustList({ items, size }: GatheringDustListProps) {
             className={cx(styles.row, desktop && styles.desktop)}
             onClick={() => navigate(`/recipes/${item.id}`)}
           >
-            <InitialTile name={item.name} size={desktop ? 52 : 48} />
             <div className={styles.text}>
               <div className={cx(styles.name, desktop && styles.desktop)}>{item.name}</div>
               <div className={cx(styles.ago, desktop && styles.desktop)}>

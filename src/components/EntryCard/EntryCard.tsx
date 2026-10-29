@@ -1,5 +1,4 @@
 import { cx } from '../../lib/cx';
-import { InitialTile } from '../InitialTile/InitialTile';
 import type { MealSlot } from '../../store/types';
 import styles from './EntryCard.module.css';
 
@@ -22,13 +21,6 @@ export function EntryCard({ name, slot, showSlot, orientation, onEdit, onDelete 
         className={cx(styles.contentButton, isVertical && styles.vertical)}
         onClick={onEdit}
       >
-        {isVertical ? (
-          <div className={styles.tileWrap}>
-            <InitialTile name={name} size={96} />
-          </div>
-        ) : (
-          <InitialTile name={name} size={56} />
-        )}
         <div className={cx(styles.text, isVertical && styles.vertical)}>
           <div className={cx(styles.name, isVertical && styles.vertical)}>{name}</div>
           {showSlot && <div className={cx(styles.slot, isVertical && styles.vertical)}>{slot}</div>}

@@ -25,7 +25,7 @@
 }
 
 .compact {
-  min-height: 86px;
+  min-height: 50px;
   font-size: 12.5px;
   padding: 10px;
   justify-content: center;

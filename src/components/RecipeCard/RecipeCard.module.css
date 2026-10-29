@@ -11,32 +11,8 @@
   cursor: pointer;
 }
 
-.photo {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: var(--radius-card);
-  overflow: hidden;
-  background: var(--color-tile);
-  border: 1px solid var(--color-line-soft);
-}
-
-.card.desktop .photo {
-  aspect-ratio: 4 / 3;
-  border-radius: var(--radius-feature-card-min);
-}
-
-.photo > div {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  border-radius: 0 !important;
-  font-size: 40px !important;
-}
-
 .name {
-  margin-top: 9px;
+  margin-top: 0;
   font-family: var(--font-heading);
   font-size: 19px;
   line-height: 1.15;
@@ -44,7 +20,7 @@
 }
 
 .card.desktop .name {
-  margin-top: 10px;
+  margin-top: 0;
   font-size: 21px;
 }
 
