@@ -105,8 +105,107 @@
   line-height: 1.5;
   color: var(--color-ink-secondary);
   margin-top: 8px;
-  white-space: pre-wrap;
+}
+
+.notes p {
+  margin: 0 0 12px;
   text-wrap: pretty;
+}
+
+.notes p:last-child {
+  margin-bottom: 0;
+}
+
+.notes h1,
+.notes h2,
+.notes h3,
+.notes h4,
+.notes h5,
+.notes h6 {
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 16px 0 8px;
+}
+
+.notes h1 {
+  font-size: 1.3em;
+}
+
+.notes h2 {
+  font-size: 1.15em;
+}
+
+.notes h3,
+.notes h4,
+.notes h5,
+.notes h6 {
+  font-size: 1em;
+}
+
+.notes ul {
+  list-style: disc;
+  margin: 0 0 12px;
+  padding-left: 22px;
+}
+
+.notes ol {
+  list-style: decimal;
+  margin: 0 0 12px;
+  padding-left: 22px;
+}
+
+.notes li {
+  margin: 2px 0;
+}
+
+.notes strong {
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.notes em {
+  font-style: italic;
+}
+
+.notes a {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.notes code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.85em;
+  background: var(--color-line-soft);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.notes pre {
+  overflow-x: auto;
+  margin: 0 0 12px;
+}
+
+.notes pre code {
+  background: none;
+  padding: 0;
+}
+
+.notes blockquote {
+  margin: 0 0 12px;
+  padding-left: 12px;
+  border-left: 2px solid var(--color-line);
+  color: var(--color-ink-secondary);
+}
+
+.notes hr {
+  border: none;
+  border-top: 1px solid var(--color-line-soft);
+  margin: 16px 0;
+}
+
+.notes img {
+  max-width: 100%;
 }
 
 .logButton {

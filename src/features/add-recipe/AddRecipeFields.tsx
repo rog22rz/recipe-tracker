@@ -43,13 +43,16 @@ export function RecipeNotesInput({ variant }: FieldProps) {
   const notes = useAppStore((state) => state.recipeSheet.notes);
   const setRecipeSheetField = useAppStore((state) => state.setRecipeSheetField);
   return (
-    <textarea
-      value={notes}
-      onChange={(event) => setRecipeSheetField('notes', event.target.value)}
-      placeholder="Notes"
-      aria-label="Notes"
-      rows={3}
-      className={cx(styles.textarea, variant === 'desktop' && styles.desktop)}
-    />
+    <>
+      <textarea
+        value={notes}
+        onChange={(event) => setRecipeSheetField('notes', event.target.value)}
+        placeholder="Notes"
+        aria-label="Notes"
+        rows={3}
+        className={cx(styles.textarea, variant === 'desktop' && styles.desktop)}
+      />
+      <p className={styles.hint}>Markdown supported</p>
+    </>
   );
 }
