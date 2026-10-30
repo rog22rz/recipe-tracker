@@ -65,6 +65,13 @@
   margin-top: 28px;
 }
 
+.ingredientSectionTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-top: 16px;
+}
+
 .ingredients {
   display: flex;
   flex-direction: column;
