@@ -7,7 +7,6 @@ export interface Recipe {
   name: string;
   cuisine: string;
   minutes: number;
-  rating: number;
   ingredients: string[];
   notes: string;
 }

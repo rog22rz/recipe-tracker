@@ -71,7 +71,6 @@ describe('addRecipe', () => {
       name: 'Cacio e Pepe',
       cuisine: '',
       minutes: 0,
-      rating: 0,
       ingredients: ['Pasta', 'Pecorino'],
       notes: '',
     });
@@ -89,7 +88,6 @@ describe('addRecipe', () => {
         name: 'Cacio e Pepe',
         cuisine: '',
         minutes: 0,
-        rating: 0,
         ingredients: [],
         notes: '',
       }),
@@ -102,7 +100,7 @@ describe('addRecipe', () => {
 
 describe('updateRecipe', () => {
   const existing: Recipe = {
-    id: 'r1', name: 'Cacio e Pepe', cuisine: 'Italian', minutes: 20, rating: 4,
+    id: 'r1', name: 'Cacio e Pepe', cuisine: 'Italian', minutes: 20,
     ingredients: ['Pasta', 'Pecorino'], notes: 'rich',
   };
 
@@ -115,7 +113,7 @@ describe('updateRecipe', () => {
     vi.mocked(putRecipe).mockResolvedValue(undefined);
 
     await useAppStore.getState().updateRecipe('r1', {
-      name: 'Cacio e Pepe (updated)', cuisine: 'Italian', minutes: 20, rating: 4,
+      name: 'Cacio e Pepe (updated)', cuisine: 'Italian', minutes: 20,
       ingredients: ['Pasta', 'Pecorino'], notes: 'rich',
     });
 
@@ -129,7 +127,7 @@ describe('updateRecipe', () => {
 
     await expect(
       useAppStore.getState().updateRecipe('r1', {
-        name: 'Changed', cuisine: 'Italian', minutes: 20, rating: 4,
+        name: 'Changed', cuisine: 'Italian', minutes: 20,
         ingredients: ['Pasta', 'Pecorino'], notes: 'rich',
       }),
     ).rejects.toThrow('offline');
@@ -140,7 +138,7 @@ describe('updateRecipe', () => {
 
   it('is a no-op when the id does not match any recipe', async () => {
     await useAppStore.getState().updateRecipe('missing', {
-      name: 'Changed', cuisine: 'Italian', minutes: 20, rating: 4,
+      name: 'Changed', cuisine: 'Italian', minutes: 20,
       ingredients: ['Pasta', 'Pecorino'], notes: 'rich',
     });
 
@@ -172,7 +170,7 @@ describe('saveRecipe', () => {
     expect(useAppStore.getState().toast?.message).toBe('Give it a name');
   });
 
-  it('trims fields, splits ingredients by line, defaults cuisine/minutes/rating, and closes the sheet on success', async () => {
+  it('trims fields, splits ingredients by line, defaults cuisine/minutes, and closes the sheet on success', async () => {
     vi.mocked(putRecipe).mockResolvedValue(undefined);
     useAppStore.setState({
       recipeSheet: {
@@ -191,7 +189,6 @@ describe('saveRecipe', () => {
       name: 'Cacio e Pepe',
       cuisine: '',
       minutes: 0,
-      rating: 0,
       ingredients: ['Pasta', 'Pecorino', 'Black pepper'],
       notes: 'rich',
     });
@@ -201,7 +198,7 @@ describe('saveRecipe', () => {
 
 describe('openEditRecipeSheet / openRecipeSheet editingId handling', () => {
   const recipe: Recipe = {
-    id: 'r1', name: 'Cacio e Pepe', cuisine: 'Italian', minutes: 20, rating: 4,
+    id: 'r1', name: 'Cacio e Pepe', cuisine: 'Italian', minutes: 20,
     ingredients: ['Pasta', 'Pecorino'], notes: 'rich',
   };
 
@@ -239,7 +236,7 @@ describe('openEditRecipeSheet / openRecipeSheet editingId handling', () => {
 
 describe('saveRecipe (editing an existing recipe)', () => {
   const existing: Recipe = {
-    id: 'r1', name: 'Cacio e Pepe', cuisine: 'Italian', minutes: 20, rating: 4,
+    id: 'r1', name: 'Cacio e Pepe', cuisine: 'Italian', minutes: 20,
     ingredients: ['Pasta', 'Pecorino'], notes: 'rich',
   };
 
@@ -259,7 +256,7 @@ describe('saveRecipe (editing an existing recipe)', () => {
     vi.mocked(putRecipe).mockReset().mockResolvedValue(undefined);
   });
 
-  it('updates the existing recipe in place, preserving cuisine/minutes/rating, rather than creating a new one', async () => {
+  it('updates the existing recipe in place, preserving cuisine/minutes, rather than creating a new one', async () => {
     useAppStore.setState((state) => ({
       recipeSheet: { ...state.recipeSheet, name: 'Cacio e Pepe (updated)' },
     }));
@@ -268,7 +265,7 @@ describe('saveRecipe (editing an existing recipe)', () => {
 
     expect(useAppStore.getState().recipes).toHaveLength(1);
     expect(useAppStore.getState().recipes[0]).toMatchObject({
-      id: 'r1', name: 'Cacio e Pepe (updated)', cuisine: 'Italian', minutes: 20, rating: 4,
+      id: 'r1', name: 'Cacio e Pepe (updated)', cuisine: 'Italian', minutes: 20,
     });
     expect(putRecipe).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'r1', name: 'Cacio e Pepe (updated)' }),

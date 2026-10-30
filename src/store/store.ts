@@ -417,12 +417,11 @@ export const useAppStore = create<AppState>()((set, get) => ({
           name,
           cuisine: editing.cuisine,
           minutes: editing.minutes,
-          rating: editing.rating,
           ingredients,
           notes,
         });
       } else {
-        await get().addRecipe({ name, cuisine: '', minutes: 0, rating: 0, ingredients, notes });
+        await get().addRecipe({ name, cuisine: '', minutes: 0, ingredients, notes });
       }
     } catch {
       return;

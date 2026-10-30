@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { StarRating } from '../../components/StarRating/StarRating';
 import { StatTrio } from '../../components/StatTrio/StatTrio';
 import styles from './RecipeDetailDesktop.module.css';
 import type { RecipeDetailContentProps } from './types';
@@ -23,7 +22,6 @@ export function RecipeDetailDesktop({ recipe, statCells, onLogNow, onEdit }: Rec
           {recipe.cuisine} · {recipe.minutes} min
         </div>
         <h1 className={styles.title}>{recipe.name}</h1>
-        <StarRating rating={recipe.rating} className={styles.stars} />
 
         <div className={styles.stats}>
           <StatTrio cells={statCells} size="desktop" />

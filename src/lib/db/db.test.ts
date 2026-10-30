@@ -35,7 +35,7 @@ describe('db (Supabase-backed)', () => {
   });
 
   it('getAllRecipes maps rows to Recipe[]', async () => {
-    const row = { id: '1', name: 'Cacio', cuisine: 'Pasta', minutes: 15, rating: 5, ingredients: [], notes: '' };
+    const row = { id: '1', name: 'Cacio', cuisine: 'Pasta', minutes: 15, ingredients: [], notes: '' };
     from.mockReturnValue(makeQueryBuilder({ data: [row], error: null }));
 
     const recipes = await getAllRecipes();
@@ -46,7 +46,7 @@ describe('db (Supabase-backed)', () => {
 
   it('putRecipe upserts without throwing on success', async () => {
     from.mockReturnValue(makeQueryBuilder({ data: null, error: null }));
-    const recipe: Recipe = { id: '1', name: 'Cacio', cuisine: 'Pasta', minutes: 15, rating: 5, ingredients: [], notes: '' };
+    const recipe: Recipe = { id: '1', name: 'Cacio', cuisine: 'Pasta', minutes: 15, ingredients: [], notes: '' };
 
     await expect(putRecipe(recipe)).resolves.toBeUndefined();
   });
