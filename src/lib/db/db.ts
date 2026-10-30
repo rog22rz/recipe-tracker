@@ -4,7 +4,7 @@ import type { LogEntry, Recipe, Settings } from '../../store/types';
 export async function getAllRecipes(): Promise<Recipe[]> {
   const { data, error } = await supabase
     .from('recipes')
-    .select('id, name, cuisine, minutes, rating, ingredients, notes');
+    .select('id, name, cuisine, minutes, ingredients, notes');
   if (error) throw error;
   return data ?? [];
 }
@@ -15,7 +15,6 @@ export async function putRecipe(recipe: Recipe): Promise<void> {
     name: recipe.name,
     cuisine: recipe.cuisine,
     minutes: recipe.minutes,
-    rating: recipe.rating,
     ingredients: recipe.ingredients,
     notes: recipe.notes,
   });

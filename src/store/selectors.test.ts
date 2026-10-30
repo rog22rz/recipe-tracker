@@ -30,7 +30,6 @@ function recipe(overrides: Partial<Recipe> & { id: string; name: string }): Reci
   return {
     cuisine: 'Test',
     minutes: 30,
-    rating: 4,
     ingredients: ['salt'],
     notes: 'notes',
     ...overrides,
