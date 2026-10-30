@@ -34,13 +34,13 @@ export function RecipeDetailMobile({ recipe, statCells, onLogNow, onEdit }: Reci
       </div>
 
       <div className={styles.sectionLabel}>Ingredients</div>
-      <div className={styles.ingredients}>
+      <ul className={styles.ingredients}>
         {recipe.ingredients.map((ingredient, index) => (
-          <div key={`${index}-${ingredient}`} className={styles.ingredient}>
+          <li key={`${index}-${ingredient}`} className={styles.ingredient}>
             {ingredient}
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
 
       <div className={styles.sectionLabel}>Notes</div>
       <p className={styles.notes}>{recipe.notes}</p>

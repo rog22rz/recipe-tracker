@@ -72,14 +72,23 @@
 .ingredients {
   display: flex;
   flex-direction: column;
-  margin-top: 10px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
 }
 
 .ingredient {
-  padding: 9px 0;
-  border-bottom: 1px solid var(--color-line-soft);
+  position: relative;
+  padding: 4px 0 4px 18px;
   font-size: 15px;
   color: var(--color-ink-secondary);
+}
+
+.ingredient::before {
+  content: '•';
+  position: absolute;
+  left: 2px;
+  color: var(--color-accent);
 }
 
 .notes {
@@ -88,6 +97,7 @@
   line-height: 1.5;
   color: var(--color-ink-secondary);
   margin-top: 8px;
+  white-space: pre-wrap;
   text-wrap: pretty;
 }
 
