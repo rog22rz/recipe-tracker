@@ -14,6 +14,7 @@ export function RecipeDetailScreen() {
   const log = useAppStore((state) => state.log);
   const addLog = useAppStore((state) => state.addLog);
   const showToast = useAppStore((state) => state.showToast);
+  const openEditRecipeSheet = useAppStore((state) => state.openEditRecipeSheet);
 
   const recipe = recipes.find((candidate) => candidate.id === id);
 
@@ -46,9 +47,11 @@ export function RecipeDetailScreen() {
     showToast(`${recipe.name} logged · ${dayLabel(loggedAtIso)}`);
   };
 
+  const handleEdit = () => openEditRecipeSheet(recipe.id);
+
   return isDesktop ? (
-    <RecipeDetailDesktop recipe={recipe} statCells={statCells} onLogNow={handleLogNow} />
+    <RecipeDetailDesktop recipe={recipe} statCells={statCells} onLogNow={handleLogNow} onEdit={handleEdit} />
   ) : (
-    <RecipeDetailMobile recipe={recipe} statCells={statCells} onLogNow={handleLogNow} />
+    <RecipeDetailMobile recipe={recipe} statCells={statCells} onLogNow={handleLogNow} onEdit={handleEdit} />
   );
 }

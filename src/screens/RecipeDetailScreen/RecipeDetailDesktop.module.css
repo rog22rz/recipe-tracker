@@ -1,3 +1,9 @@
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .back {
   display: inline-flex;
   align-items: center;
@@ -10,6 +16,23 @@
   font-weight: 700;
   color: var(--color-accent);
   cursor: pointer;
+}
+
+.edit {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  min-height: 36px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--color-label);
+  cursor: pointer;
+}
+
+.edit:hover {
+  color: var(--color-ink);
 }
 
 .content {
