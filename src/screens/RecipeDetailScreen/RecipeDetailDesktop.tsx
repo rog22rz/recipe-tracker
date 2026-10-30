@@ -4,14 +4,19 @@ import { StatTrio } from '../../components/StatTrio/StatTrio';
 import styles from './RecipeDetailDesktop.module.css';
 import type { RecipeDetailContentProps } from './types';
 
-export function RecipeDetailDesktop({ recipe, statCells, onLogNow }: RecipeDetailContentProps) {
+export function RecipeDetailDesktop({ recipe, statCells, onLogNow, onEdit }: RecipeDetailContentProps) {
   const navigate = useNavigate();
 
   return (
     <div>
-      <button type="button" className={styles.back} onClick={() => navigate('/recipes')}>
-        ‹ All recipes
-      </button>
+      <div className={styles.topRow}>
+        <button type="button" className={styles.back} onClick={() => navigate('/recipes')}>
+          ‹ All recipes
+        </button>
+        <button type="button" className={styles.edit} onClick={onEdit}>
+          Edit
+        </button>
+      </div>
 
       <div className={styles.content}>
         <div className={styles.eyebrow}>

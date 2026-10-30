@@ -7,6 +7,7 @@ import { SaveRecipeButton } from './SaveRecipeButton';
 
 export function AddRecipeSheetMobile() {
   const closeRecipeSheet = useAppStore((state) => state.closeRecipeSheet);
+  const editingId = useAppStore((state) => state.recipeSheet.editingId);
   const containerRef = useFocusTrap<HTMLDivElement>(closeRecipeSheet);
 
   return (
@@ -18,11 +19,11 @@ export function AddRecipeSheetMobile() {
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
-        aria-label="Add a recipe"
+        aria-label={editingId ? 'Edit recipe' : 'Add a recipe'}
       >
         <div className={styles.handle} />
         <div className={styles.header}>
-          <h2 className={styles.title}>Add a recipe</h2>
+          <h2 className={styles.title}>{editingId ? 'Edit recipe' : 'Add a recipe'}</h2>
           <button type="button" className={styles.cancel} onClick={closeRecipeSheet}>
             Cancel
           </button>

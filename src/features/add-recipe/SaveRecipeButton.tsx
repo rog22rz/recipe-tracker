@@ -7,10 +7,12 @@ interface SaveRecipeButtonProps {
 
 export function SaveRecipeButton({ className }: SaveRecipeButtonProps) {
   const name = useAppStore((state) => state.recipeSheet.name);
+  const editingId = useAppStore((state) => state.recipeSheet.editingId);
   const savingRecipe = useAppStore((state) => state.savingRecipe);
   const saveRecipe = useAppStore((state) => state.saveRecipe);
 
   const canSave = name.trim().length > 0;
+  const label = canSave ? (editingId ? 'Save changes' : 'Save recipe') : 'Give it a name';
 
   return (
     <button
@@ -21,7 +23,7 @@ export function SaveRecipeButton({ className }: SaveRecipeButtonProps) {
         void saveRecipe();
       }}
     >
-      {canSave ? 'Save recipe' : 'Give it a name'}
+      {label}
     </button>
   );
 }

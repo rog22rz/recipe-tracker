@@ -4,19 +4,24 @@ import { StatTrio } from '../../components/StatTrio/StatTrio';
 import styles from './RecipeDetailMobile.module.css';
 import type { RecipeDetailContentProps } from './types';
 
-export function RecipeDetailMobile({ recipe, statCells, onLogNow }: RecipeDetailContentProps) {
+export function RecipeDetailMobile({ recipe, statCells, onLogNow, onEdit }: RecipeDetailContentProps) {
   const navigate = useNavigate();
 
   return (
     <div className={styles.body}>
-      <button
-        type="button"
-        className={styles.back}
-        onClick={() => navigate('/recipes')}
-        aria-label="Back to recipes"
-      >
-        ‹
-      </button>
+      <div className={styles.topRow}>
+        <button
+          type="button"
+          className={styles.back}
+          onClick={() => navigate('/recipes')}
+          aria-label="Back to recipes"
+        >
+          ‹
+        </button>
+        <button type="button" className={styles.edit} onClick={onEdit}>
+          Edit
+        </button>
+      </div>
 
       <div className={styles.eyebrow}>
         {recipe.cuisine} · {recipe.minutes} min

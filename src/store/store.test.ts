@@ -19,7 +19,7 @@ import {
   putRecipe,
 } from '../lib/db/db';
 import { useAppStore } from './store';
-import type { LogEntry } from './types';
+import type { LogEntry, Recipe } from './types';
 
 describe('hydrate error handling', () => {
   beforeEach(() => {
@@ -100,6 +100,55 @@ describe('addRecipe', () => {
   });
 });
 
+describe('updateRecipe', () => {
+  const existing: Recipe = {
+    id: 'r1', name: 'Cacio e Pepe', cuisine: 'Italian', minutes: 20, rating: 4,
+    ingredients: ['Pasta', 'Pecorino'], notes: 'rich',
+  };
+
+  beforeEach(() => {
+    useAppStore.setState({ recipes: [existing], toast: null });
+    vi.mocked(putRecipe).mockReset();
+  });
+
+  it('optimistically updates the recipe in place and persists it', async () => {
+    vi.mocked(putRecipe).mockResolvedValue(undefined);
+
+    await useAppStore.getState().updateRecipe('r1', {
+      name: 'Cacio e Pepe (updated)', cuisine: 'Italian', minutes: 20, rating: 4,
+      ingredients: ['Pasta', 'Pecorino'], notes: 'rich',
+    });
+
+    expect(useAppStore.getState().recipes).toHaveLength(1);
+    expect(useAppStore.getState().recipes[0]).toMatchObject({ id: 'r1', name: 'Cacio e Pepe (updated)' });
+    expect(putRecipe).toHaveBeenCalledWith(expect.objectContaining({ id: 'r1', name: 'Cacio e Pepe (updated)' }));
+  });
+
+  it('rolls back to the previous recipe and shows a toast when persistence fails', async () => {
+    vi.mocked(putRecipe).mockRejectedValue(new Error('offline'));
+
+    await expect(
+      useAppStore.getState().updateRecipe('r1', {
+        name: 'Changed', cuisine: 'Italian', minutes: 20, rating: 4,
+        ingredients: ['Pasta', 'Pecorino'], notes: 'rich',
+      }),
+    ).rejects.toThrow('offline');
+
+    expect(useAppStore.getState().recipes).toEqual([existing]);
+    expect(useAppStore.getState().toast?.message).toBe("Couldn't save — try again");
+  });
+
+  it('is a no-op when the id does not match any recipe', async () => {
+    await useAppStore.getState().updateRecipe('missing', {
+      name: 'Changed', cuisine: 'Italian', minutes: 20, rating: 4,
+      ingredients: ['Pasta', 'Pecorino'], notes: 'rich',
+    });
+
+    expect(useAppStore.getState().recipes).toEqual([existing]);
+    expect(putRecipe).not.toHaveBeenCalled();
+  });
+});
+
 describe('saveRecipe', () => {
   beforeEach(() => {
     useAppStore.setState({
@@ -107,6 +156,7 @@ describe('saveRecipe', () => {
       toast: null,
       recipeSheet: {
         open: true,
+        editingId: null,
         name: '',
         ingredientsText: '',
         notes: '',
@@ -127,6 +177,7 @@ describe('saveRecipe', () => {
     useAppStore.setState({
       recipeSheet: {
         open: true,
+        editingId: null,
         name: '  Cacio e Pepe  ',
         ingredientsText: 'Pasta\n Pecorino \n\nBlack pepper',
         notes: ' rich ',
@@ -145,6 +196,103 @@ describe('saveRecipe', () => {
       notes: 'rich',
     });
     expect(useAppStore.getState().recipeSheet.open).toBe(false);
+  });
+});
+
+describe('openEditRecipeSheet / openRecipeSheet editingId handling', () => {
+  const recipe: Recipe = {
+    id: 'r1', name: 'Cacio e Pepe', cuisine: 'Italian', minutes: 20, rating: 4,
+    ingredients: ['Pasta', 'Pecorino'], notes: 'rich',
+  };
+
+  beforeEach(() => {
+    useAppStore.setState({ recipes: [recipe] });
+  });
+
+  it('prefills the recipe sheet from the matching recipe and sets editingId', () => {
+    useAppStore.getState().openEditRecipeSheet('r1');
+
+    expect(useAppStore.getState().recipeSheet).toMatchObject({
+      open: true,
+      editingId: 'r1',
+      name: 'Cacio e Pepe',
+      ingredientsText: 'Pasta\nPecorino',
+      notes: 'rich',
+    });
+  });
+
+  it('is a no-op when the id does not match any recipe', () => {
+    const before = useAppStore.getState().recipeSheet;
+    useAppStore.getState().openEditRecipeSheet('missing');
+    expect(useAppStore.getState().recipeSheet).toBe(before);
+  });
+
+  it('openRecipeSheet resets editingId to null, exiting edit mode', () => {
+    useAppStore.getState().openEditRecipeSheet('r1');
+    expect(useAppStore.getState().recipeSheet.editingId).toBe('r1');
+
+    useAppStore.getState().openRecipeSheet();
+
+    expect(useAppStore.getState().recipeSheet.editingId).toBeNull();
+  });
+});
+
+describe('saveRecipe (editing an existing recipe)', () => {
+  const existing: Recipe = {
+    id: 'r1', name: 'Cacio e Pepe', cuisine: 'Italian', minutes: 20, rating: 4,
+    ingredients: ['Pasta', 'Pecorino'], notes: 'rich',
+  };
+
+  beforeEach(() => {
+    useAppStore.setState({
+      recipes: [existing],
+      toast: null,
+      savingRecipe: false,
+      recipeSheet: {
+        open: true,
+        editingId: 'r1',
+        name: existing.name,
+        ingredientsText: existing.ingredients.join('\n'),
+        notes: existing.notes,
+      },
+    });
+    vi.mocked(putRecipe).mockReset().mockResolvedValue(undefined);
+  });
+
+  it('updates the existing recipe in place, preserving cuisine/minutes/rating, rather than creating a new one', async () => {
+    useAppStore.setState((state) => ({
+      recipeSheet: { ...state.recipeSheet, name: 'Cacio e Pepe (updated)' },
+    }));
+
+    await useAppStore.getState().saveRecipe();
+
+    expect(useAppStore.getState().recipes).toHaveLength(1);
+    expect(useAppStore.getState().recipes[0]).toMatchObject({
+      id: 'r1', name: 'Cacio e Pepe (updated)', cuisine: 'Italian', minutes: 20, rating: 4,
+    });
+    expect(putRecipe).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'r1', name: 'Cacio e Pepe (updated)' }),
+    );
+  });
+
+  it('shows an "updated" toast and closes the sheet, exiting edit mode, on success', async () => {
+    await useAppStore.getState().saveRecipe();
+
+    expect(useAppStore.getState().toast?.message).toBe('Cacio e Pepe updated');
+    expect(useAppStore.getState().recipeSheet.open).toBe(false);
+    expect(useAppStore.getState().recipeSheet.editingId).toBeNull();
+  });
+
+  it('rolls back to the previous recipe and shows a toast when persistence fails', async () => {
+    useAppStore.setState((state) => ({
+      recipeSheet: { ...state.recipeSheet, name: 'Changed' },
+    }));
+    vi.mocked(putRecipe).mockRejectedValue(new Error('offline'));
+
+    await useAppStore.getState().saveRecipe();
+
+    expect(useAppStore.getState().recipes).toEqual([existing]);
+    expect(useAppStore.getState().toast?.message).toBe("Couldn't save — try again");
   });
 });
 

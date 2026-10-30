@@ -50,13 +50,14 @@ function initialSheetState(): SheetState {
 
 interface RecipeSheetState {
   open: boolean;
+  editingId: string | null;
   name: string;
   ingredientsText: string;
   notes: string;
 }
 
 function initialRecipeSheetState(): RecipeSheetState {
-  return { open: false, name: '', ingredientsText: '', notes: '' };
+  return { open: false, editingId: null, name: '', ingredientsText: '', notes: '' };
 }
 
 interface ToastState {
@@ -105,9 +106,11 @@ interface AppState {
   openSettings(): void;
   closeSettings(): void;
   openRecipeSheet(): void;
+  openEditRecipeSheet(id: string): void;
   closeRecipeSheet(): void;
   setRecipeSheetField<K extends keyof RecipeSheetState>(key: K, value: RecipeSheetState[K]): void;
   addRecipe(recipe: Omit<Recipe, 'id'>): Promise<void>;
+  updateRecipe(id: string, updates: Omit<Recipe, 'id'>): Promise<void>;
   saveRecipe(): Promise<void>;
 }
 
@@ -241,6 +244,25 @@ export const useAppStore = create<AppState>()((set, get) => ({
     }
   },
 
+  async updateRecipe(id, updates) {
+    const previous = get().recipes.find((existing) => existing.id === id);
+    if (!previous) return;
+
+    const updatedRecipe: Recipe = { ...updates, id };
+    set((state) => ({
+      recipes: state.recipes.map((existing) => (existing.id === id ? updatedRecipe : existing)),
+    }));
+    try {
+      await putRecipe(updatedRecipe);
+    } catch (error) {
+      set((state) => ({
+        recipes: state.recipes.map((existing) => (existing.id === id ? previous : existing)),
+      }));
+      get().showToast("Couldn't save — try again");
+      throw error;
+    }
+  },
+
   setSort(sort) {
     set({ sort });
   },
@@ -347,6 +369,21 @@ export const useAppStore = create<AppState>()((set, get) => ({
     set({ recipeSheet: { ...initialRecipeSheetState(), open: true } });
   },
 
+  openEditRecipeSheet(id) {
+    const recipe = get().recipes.find((existing) => existing.id === id);
+    if (!recipe) return;
+
+    set({
+      recipeSheet: {
+        open: true,
+        editingId: recipe.id,
+        name: recipe.name,
+        ingredientsText: recipe.ingredients.join('\n'),
+        notes: recipe.notes,
+      },
+    });
+  },
+
   closeRecipeSheet() {
     set((state) => ({ recipeSheet: { ...state.recipeSheet, open: false } }));
   },
@@ -358,7 +395,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
   async saveRecipe() {
     if (get().savingRecipe) return;
 
-    const { recipeSheet } = get();
+    const { recipeSheet, recipes } = get();
     const name = recipeSheet.name.trim();
     if (!name) {
       get().showToast('Give it a name');
@@ -369,24 +406,31 @@ export const useAppStore = create<AppState>()((set, get) => ({
       .split('\n')
       .map((line) => line.trim())
       .filter(Boolean);
+    const notes = recipeSheet.notes.trim();
 
     set({ savingRecipe: true });
     try {
-      await get().addRecipe({
-        name,
-        cuisine: '',
-        minutes: 0,
-        rating: 0,
-        ingredients,
-        notes: recipeSheet.notes.trim(),
-      });
+      if (recipeSheet.editingId) {
+        const editing = recipes.find((recipe) => recipe.id === recipeSheet.editingId);
+        if (!editing) return;
+        await get().updateRecipe(recipeSheet.editingId, {
+          name,
+          cuisine: editing.cuisine,
+          minutes: editing.minutes,
+          rating: editing.rating,
+          ingredients,
+          notes,
+        });
+      } else {
+        await get().addRecipe({ name, cuisine: '', minutes: 0, rating: 0, ingredients, notes });
+      }
     } catch {
       return;
     } finally {
       set({ savingRecipe: false });
     }
 
-    get().showToast(`${name} added`);
+    get().showToast(`${name} ${recipeSheet.editingId ? 'updated' : 'added'}`);
     set({ recipeSheet: initialRecipeSheetState() });
   },
 
