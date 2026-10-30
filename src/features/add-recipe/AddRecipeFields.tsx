@@ -25,14 +25,17 @@ export function RecipeIngredientsInput({ variant }: FieldProps) {
   const ingredientsText = useAppStore((state) => state.recipeSheet.ingredientsText);
   const setRecipeSheetField = useAppStore((state) => state.setRecipeSheetField);
   return (
-    <textarea
-      value={ingredientsText}
-      onChange={(event) => setRecipeSheetField('ingredientsText', event.target.value)}
-      placeholder="One ingredient per line"
-      aria-label="Ingredients"
-      rows={5}
-      className={cx(styles.textarea, variant === 'desktop' && styles.desktop)}
-    />
+    <>
+      <textarea
+        value={ingredientsText}
+        onChange={(event) => setRecipeSheetField('ingredientsText', event.target.value)}
+        placeholder="One ingredient per line"
+        aria-label="Ingredients"
+        rows={5}
+        className={cx(styles.textarea, variant === 'desktop' && styles.desktop)}
+      />
+      <p className={styles.hint}>Start a line with # for a section title</p>
+    </>
   );
 }
 
