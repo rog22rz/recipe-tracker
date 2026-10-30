@@ -2,6 +2,7 @@ import { Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StatTrio } from '../../components/StatTrio/StatTrio';
 import { groupIngredients } from './groupIngredients';
+import { NotesMarkdown } from './NotesMarkdown';
 import styles from './RecipeDetailDesktop.module.css';
 import type { RecipeDetailContentProps } from './types';
 
@@ -48,7 +49,7 @@ export function RecipeDetailDesktop({ recipe, statCells, onLogNow, onEdit }: Rec
         ))}
 
         <div className={styles.sectionLabel}>Notes</div>
-        <p className={styles.notes}>{recipe.notes}</p>
+        <NotesMarkdown notes={recipe.notes} className={styles.notes} />
 
         <button type="button" className={styles.logButton} onClick={onLogNow}>
           Log that we made this
