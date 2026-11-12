@@ -330,62 +330,88 @@ describe('removeLog / undoRemoveLog', () => {
     vi.useFakeTimers();
     useAppStore.setState({ log: [entry], recipes: [], toast: null, pendingDeletion: null });
     vi.mocked(deleteLogEntry).mockReset().mockResolvedValue(undefined);
+    vi.mocked(putLogEntry).mockReset().mockResolvedValue(undefined);
   });
 
   afterEach(() => {
     vi.useRealTimers();
   });
 
-  it('optimistically removes the entry and shows an Undo toast', () => {
-    useAppStore.getState().removeLog('e1');
+  it('optimistically removes the entry from local state immediately', async () => {
+    const promise = useAppStore.getState().removeLog('e1');
 
     expect(useAppStore.getState().log).toHaveLength(0);
-    expect(useAppStore.getState().toast).toMatchObject({ message: 'Takeout removed', actionLabel: 'Undo' });
-    expect(deleteLogEntry).not.toHaveBeenCalled();
+
+    await promise;
   });
 
-  it('flushes (commits) a previous pending deletion when removeLog is called again before the undo window elapses', async () => {
+  it('commits the deletion to Supabase immediately, not deferred, and shows an Undo toast on success', async () => {
+    await useAppStore.getState().removeLog('e1');
+
+    expect(deleteLogEntry).toHaveBeenCalledWith('e1');
+    expect(useAppStore.getState().toast).toMatchObject({ message: 'Takeout removed', actionLabel: 'Undo' });
+    expect(useAppStore.getState().pendingDeletion).toEqual(entry);
+  });
+
+  it('rolls back (restores the entry) and shows a failure toast when the delete fails', async () => {
+    vi.mocked(deleteLogEntry).mockRejectedValue(new Error('offline'));
+
+    await useAppStore.getState().removeLog('e1');
+
+    expect(useAppStore.getState().log).toEqual([entry]);
+    expect(useAppStore.getState().pendingDeletion).toBeNull();
+    expect(useAppStore.getState().toast).toMatchObject({ message: "Couldn't delete — try again" });
+  });
+
+  it('clears pendingDeletion once the undo window elapses, with no further Supabase calls', async () => {
+    await useAppStore.getState().removeLog('e1');
+    expect(deleteLogEntry).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(5000);
+
+    expect(useAppStore.getState().pendingDeletion).toBeNull();
+    expect(deleteLogEntry).toHaveBeenCalledTimes(1);
+  });
+
+  it('removing a second entry before the undo window elapses commits both independently and leaves only the second as undoable', async () => {
     const entry2: LogEntry = { ...entry, id: 'e2', freeName: 'Leftovers' };
     useAppStore.setState({ log: [entry, entry2] });
 
-    useAppStore.getState().removeLog('e1');
-    useAppStore.getState().removeLog('e2');
-    await vi.advanceTimersByTimeAsync(0);
+    await useAppStore.getState().removeLog('e1');
+    await useAppStore.getState().removeLog('e2');
 
-    expect(deleteLogEntry).toHaveBeenCalledWith('e1');
+    expect(deleteLogEntry).toHaveBeenCalledTimes(2);
+    expect(deleteLogEntry).toHaveBeenNthCalledWith(1, 'e1');
+    expect(deleteLogEntry).toHaveBeenNthCalledWith(2, 'e2');
     expect(useAppStore.getState().pendingDeletion).toEqual(entry2);
     expect(useAppStore.getState().log).toHaveLength(0);
   });
 
-  it('commits the delete once the undo window elapses', async () => {
-    useAppStore.getState().removeLog('e1');
-
-    await vi.runAllTimersAsync();
-
-    expect(deleteLogEntry).toHaveBeenCalledWith('e1');
-    expect(useAppStore.getState().pendingDeletion).toBeNull();
-  });
-
-  it('undoRemoveLog restores the entry and cancels the pending delete', async () => {
-    useAppStore.getState().removeLog('e1');
-    useAppStore.getState().undoRemoveLog();
-
-    await vi.runAllTimersAsync();
+  it('undoRemoveLog restores the entry locally and re-inserts it via putLogEntry (upsert)', async () => {
+    await useAppStore.getState().removeLog('e1');
+    await useAppStore.getState().undoRemoveLog();
 
     expect(useAppStore.getState().log).toEqual([entry]);
     expect(useAppStore.getState().pendingDeletion).toBeNull();
     expect(useAppStore.getState().toast).toBeNull();
-    expect(deleteLogEntry).not.toHaveBeenCalled();
+    expect(putLogEntry).toHaveBeenCalledWith(entry);
   });
 
-  it('restores the entry and shows a failure toast when the commit fails', async () => {
-    vi.mocked(deleteLogEntry).mockRejectedValue(new Error('offline'));
-    useAppStore.getState().removeLog('e1');
+  it('undoRemoveLog rolls back the local restore and shows a failure toast when re-insertion fails', async () => {
+    vi.mocked(putLogEntry).mockRejectedValue(new Error('offline'));
 
-    await vi.advanceTimersByTimeAsync(5000);
+    await useAppStore.getState().removeLog('e1');
+    await useAppStore.getState().undoRemoveLog();
+
+    expect(useAppStore.getState().log).toHaveLength(0);
+    expect(useAppStore.getState().toast).toMatchObject({ message: "Couldn't undo — try again" });
+  });
+
+  it('undoRemoveLog is a no-op when there is no pending deletion', async () => {
+    await useAppStore.getState().undoRemoveLog();
 
     expect(useAppStore.getState().log).toEqual([entry]);
-    expect(useAppStore.getState().toast).toMatchObject({ message: "Couldn't delete — try again" });
+    expect(putLogEntry).not.toHaveBeenCalled();
   });
 });
 
