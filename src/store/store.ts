@@ -88,8 +88,8 @@ interface AppState {
   hydrate(): Promise<void>;
   addLog(entry: Omit<LogEntry, 'id' | 'createdAt'>): Promise<void>;
   updateLog(previous: LogEntry, entry: Omit<LogEntry, 'id' | 'createdAt'>): Promise<void>;
-  removeLog(id: string): void;
-  undoRemoveLog(): void;
+  removeLog(id: string): Promise<void>;
+  undoRemoveLog(): Promise<void>;
   setSort(sort: SortKey): void;
   setQuery(query: string): void;
   setHistoryRange(range: TimeRangeKey): void;
@@ -117,21 +117,6 @@ interface AppState {
 let toastTimeout: ReturnType<typeof setTimeout> | undefined;
 let hydratePromise: Promise<void> | undefined;
 let pendingDeleteTimeout: ReturnType<typeof setTimeout> | undefined;
-
-async function commitPendingDeletion(
-  set: (partial: Partial<AppState> | ((state: AppState) => Partial<AppState>)) => void,
-  get: () => AppState,
-): Promise<void> {
-  const pending = get().pendingDeletion;
-  if (!pending) return;
-  set({ pendingDeletion: null });
-  try {
-    await deleteLogEntry(pending.id);
-  } catch {
-    set((state) => ({ log: [...state.log, pending] }));
-    get().showToast("Couldn't delete — try again");
-  }
-}
 
 export const useAppStore = create<AppState>()((set, get) => ({
   recipes: [],
@@ -203,18 +188,24 @@ export const useAppStore = create<AppState>()((set, get) => ({
     }
   },
 
-  removeLog(id) {
+  async removeLog(id) {
     const entry = get().log.find((existing) => existing.id === id);
     if (!entry) return;
 
-    if (get().pendingDeletion) {
-      if (pendingDeleteTimeout) clearTimeout(pendingDeleteTimeout);
-      void commitPendingDeletion(set, get);
-    }
+    if (pendingDeleteTimeout) clearTimeout(pendingDeleteTimeout);
 
     set((state) => ({ log: state.log.filter((existing) => existing.id !== id), pendingDeletion: entry }));
+
+    try {
+      await deleteLogEntry(id);
+    } catch {
+      set((state) => ({ log: [...state.log, entry], pendingDeletion: null }));
+      get().showToast("Couldn't delete — try again");
+      return;
+    }
+
     pendingDeleteTimeout = setTimeout(() => {
-      void commitPendingDeletion(set, get);
+      set((state) => (state.pendingDeletion?.id === entry.id ? { pendingDeletion: null } : {}));
     }, UNDO_WINDOW_MS);
 
     get().showToast(`${entryLabel(entry, get().recipes)} removed`, {
@@ -224,12 +215,19 @@ export const useAppStore = create<AppState>()((set, get) => ({
     });
   },
 
-  undoRemoveLog() {
+  async undoRemoveLog() {
     const pending = get().pendingDeletion;
     if (!pending) return;
 
     if (pendingDeleteTimeout) clearTimeout(pendingDeleteTimeout);
     set((state) => ({ log: [...state.log, pending], pendingDeletion: null, toast: null }));
+
+    try {
+      await putLogEntry(pending);
+    } catch {
+      set((state) => ({ log: state.log.filter((existing) => existing.id !== pending.id) }));
+      get().showToast("Couldn't undo — try again");
+    }
   },
 
   async addRecipe(recipe) {
